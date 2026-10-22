@@ -1,0 +1,35 @@
+-- Menu from the Darvoo catalogue and flyer. All prices are a €30 demo price for now.
+insert into public.products (id, category, name, unit, price_cents, image_path, sort) values
+('jollof','dishes','Jollof Rice & Chicken','per plate',3000,'/menu/d05.jpg',10),
+('jollof-fish','dishes','Jollof Rice, Plantain & Grilled Fish','per plate',3000,'/menu/d14.jpg',20),
+('plantain-fish','dishes','Fried Plantain & Grilled Fish in Pepper Sauce','per plate',3000,'/menu/d04.jpg',30),
+('pepper-fish','dishes','Fried Fish in Pepper Sauce','per plate',3000,'/menu/d17.jpg',40),
+('fried-yam','dishes','Fried Yam, Pepper Sauce & Fish','per plate',3000,'/menu/d15.jpg',50),
+('yam-porridge','dishes','Yam Porridge with Turkey Sauce','per plate',3000,'/menu/d08.jpg',60),
+('agonyin','dishes','Agonyin Beans & Fried Plantain','per plate',3000,'/menu/d10.jpg',70),
+('egusi','dishes','Egusi Soup with Garri','per plate',3000,'/menu/d21.jpg',80),
+('ogbono','dishes','Ogbono Soup with Garri','per plate',3000,'/menu/d26.jpg',90),
+('banga','dishes','Banga Soup with Fish & Lobster','per plate',3000,'/menu/d25.jpg',100),
+('snail-soup','dishes','Yam Flour, Okro & Snail Soup','per plate',3000,'/menu/d27.jpg',110),
+('assorted-stew','dishes','Stew with Assorted Meat','per bowl',3000,'/menu/d29.jpg',120),
+('moin-moin','dishes','Moin Moin','per wrap',3000,'/menu/d12.jpg',130),
+('meat-pie','dishes','Meat Pie','each',3000,'/menu/d06.jpg',140),
+('dry-ogbono','groceries','Dry Ogbono','500 g',3000,'/menu/s_ogbono.jpg',10),
+('egusi-seed','groceries','Egusi','500 g',3000,'/menu/s_egusi.jpg',20),
+('crayfish','groceries','Dry Crayfish','200 g',3000,'/menu/s_crayfish.jpg',30),
+('cameroun-pepper','groceries','Cameroun Pepper','100 g',3000,'/menu/s_pepper.jpg',40),
+('banga-fruit','groceries','Banga (Palm Fruit)','800 g',3000,'/menu/s_banga.jpg',50),
+('snail','groceries','Snail','500 g',3000,'/menu/s_snail.jpg',60),
+('gari-ijebu','groceries','Gari Ijebu','2 kg',3000,'/menu/s_gari.jpg',70),
+('cassava-flour','groceries','Cassava Flour','1 kg',3000,'/menu/s_cassava.jpg',80),
+('banana-flour','groceries','Banana Flour','1 kg',3000,null,90),
+('palm-oil','groceries','Palm Oil','1 L',3000,'/menu/s_palmoil.jpg',100),
+('beans','groceries','Beans','1 kg',3000,'/menu/s_beans.jpg',110),
+('tray-jollof','events','Jollof Rice Tray','party tray',3000,'/menu/d33.jpg',10),
+('tray-chicken','events','Fried Chicken Tray','party tray',3000,'/menu/d31.jpg',20),
+('tray-fish','events','Fried Fish Tray','party tray',3000,'/menu/d30.jpg',30),
+('tray-plantain','events','Fried Plantain Tray','party tray',3000,'/menu/d32.jpg',40),
+('tray-egusi','events','Egusi Soup Trays','party tray',3000,'/menu/d24.jpg',50);
+
+insert into public.slot_templates (slot_time, capacity) values
+('12:00',4),('13:00',4),('14:00',4),('15:00',4),('16:00',4),('17:00',6),('18:00',6),('19:00',4);

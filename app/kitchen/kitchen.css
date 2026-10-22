@@ -1,0 +1,48 @@
+.k-page { min-height: 100dvh; background: var(--surface); }
+.k-head { background: var(--green); color: #fff; }
+.k-head-inner { max-width: 1440px; margin: 0 auto; padding: 16px 24px; display: flex; flex-wrap: wrap; align-items: center; gap: 14px; }
+.k-brand { display: flex; align-items: baseline; gap: 10px; flex: 1 1 260px; }
+.k-brand .display { font-size: 26px; }
+.k-tag { font-size: 13px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: var(--gold); }
+.k-live { font-size: 12px; font-weight: 700; padding: 3px 8px; border-radius: 8px; background: rgba(255,255,255,0.14); }
+.k-live.on::before { content: ""; display: inline-block; width: 8px; height: 8px; border-radius: 4px; background: #7cf29c; margin-right: 6px; }
+.k-stats { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
+.k-stat { padding: 10px 14px; border-radius: 12px; background: rgba(255,255,255,0.14); font-size: 14px; }
+.k-stat.alert { background: var(--gold); color: var(--ink); }
+.k-pause { height: 44px; padding: 0 18px; border-radius: 22px; border: 0; font-size: 14px; font-weight: 700; background: var(--gold); color: var(--ink); }
+.k-pause.paused { background: var(--danger-tint); color: var(--danger); }
+.k-signout { height: 44px; padding: 0 14px; border-radius: 22px; border: 1px solid rgba(255,255,255,0.4); background: transparent; color: #fff; font-weight: 700; font-size: 13px; }
+.k-main { max-width: 1440px; margin: 0 auto; padding: 24px; }
+.k-cols { display: flex; flex-wrap: wrap; gap: 16px; align-items: flex-start; }
+.k-col { flex: 1 1 240px; min-width: 0; display: flex; flex-direction: column; gap: 10px; }
+.k-col-head { display: flex; align-items: center; justify-content: space-between; padding: 0 4px; }
+.k-col-head h2 { margin: 0; font-size: 15px; }
+.k-badge { min-width: 26px; height: 26px; padding: 0 8px; border-radius: 13px; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 700; }
+.k-badge.gold { background: var(--gold); }
+.k-badge.orange { background: var(--danger-tint); color: var(--danger); }
+.k-badge.green { background: var(--green-tint); color: var(--green); }
+.k-badge.blue { background: var(--blue-tint); color: var(--blue); }
+.k-badge.grey { background: var(--line); color: var(--ink-2); }
+.k-card { background: #fff; border-radius: 16px; padding: 14px; display: flex; flex-direction: column; gap: 8px; box-shadow: 0 1px 2px rgba(0,0,0,0.06); }
+.k-card-top { display: flex; justify-content: space-between; gap: 8px; font-size: 15px; }
+.k-time { font-weight: 700; color: var(--green); }
+.k-items { margin: 0; padding: 0; list-style: none; font-size: 14px; line-height: 20px; color: var(--ink-2); }
+.k-note { margin: 0; font-size: 13px; font-style: italic; color: var(--ink-2); background: var(--gold-tint); padding: 6px 8px; border-radius: 8px; }
+.k-tags { display: flex; gap: 6px; flex-wrap: wrap; }
+.k-pill { font-size: 12px; font-weight: 700; padding: 3px 8px; border-radius: 8px; }
+.k-pill.blue { background: var(--blue-tint); color: var(--blue); }
+.k-pill.gold { background: var(--gold-tint); color: #78350f; }
+.k-pill.green { background: var(--green-tint); color: var(--green); }
+.k-addr { margin: 0; font-size: 13px; color: var(--ink-2); }
+.k-phone { font-size: 13px; font-weight: 700; }
+.k-muted { color: var(--muted); }
+.k-muted.small { font-size: 12px; }
+.k-btn { height: 44px; border-radius: 12px; border: 0; background: var(--green); color: #fff; font-size: 14px; font-weight: 700; width: 100%; }
+.k-btn:disabled { opacity: 0.6; }
+.k-btn.ghost { background: #fff; color: var(--danger); border: 1px solid var(--line); }
+.k-empty { border: 1.5px dashed var(--field); border-radius: 16px; padding: 18px; text-align: center; font-size: 13px; color: #78716c; }
+.k-center { min-height: 100dvh; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px; padding: 24px; text-align: center; background: var(--surface); }
+.k-login { width: 100%; max-width: 360px; background: #fff; border-radius: 20px; padding: 28px; display: flex; flex-direction: column; gap: 14px; text-align: left; box-shadow: 0 2px 10px rgba(0,0,0,0.06); }
+.k-logo { font-size: 28px; color: var(--green); }
+.k-logo em { font-style: normal; font-size: 14px; letter-spacing: 2px; text-transform: uppercase; color: var(--ink-2); }
+.k-err { margin: 0; color: var(--danger); font-size: 13px; }

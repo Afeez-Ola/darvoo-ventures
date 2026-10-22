@@ -1,0 +1,227 @@
+"use client";
+
+import { createContext, useContext, useEffect, useState, ReactNode } from "react";
+
+export type Lang = "en" | "de";
+
+const en = {
+  tagline: "Ventures · Wilfersdorf, Austria",
+  heroEyebrow: "Cooked and uncooked · Home delivery",
+  heroTitle: "Nigerian dishes and food stuffs, delivered to your doorstep.",
+  orderUntil: "Same day orders until",
+  eventCatering: "Event catering",
+  dishes: "Dishes",
+  groceries: "Food stuffs",
+  events: "Events",
+  groceriesNote: "Packed in Wilfersdorf and delivered or sent to you. Store in a dry, cool place.",
+  eventsNote: "Party trays for weddings, birthdays and church events. Book a few days ahead, or call us for a quote.",
+  paused: "We are not taking new orders right now. Please check back soon or call us.",
+  planningEvent: "Planning an event?",
+  callUs: "Call us",
+  viewBasket: "View basket",
+  add: "Add",
+  remove: "Remove",
+  photoComing: "Photo coming",
+  yourBasket: "Your basket",
+  emptyBasket: "Your basket is empty.",
+  backToMenu: "Back to menu",
+  howWant: "How do you want it?",
+  delivery: "Delivery",
+  pickup: "Pickup",
+  chooseDay: "Choose a day",
+  chooseTime: "Choose a time",
+  slotsNote: "Slots close when the kitchen is fully booked, so every order goes out on time.",
+  full: "Full",
+  lastSpot: "Last spot",
+  open: "Open",
+  closed: "Closed",
+  noSlots: "No times left on this day. Try another day.",
+  deliveryAddress: "Delivery address",
+  street: "Street and number",
+  postcode: "Postcode",
+  door: "Stiege / Tür",
+  pickupTitle: "Pick up from Darvoo kitchen",
+  pickupAddress: "Mistelbacherstraße 31, Wilfersdorf. We text you when it is ready.",
+  kitchenNote: "Note for the kitchen (optional)",
+  subtotal: "Subtotal",
+  deliveryFee: "Delivery fee",
+  free: "Free",
+  total: "Total",
+  continuePay: "Continue to payment",
+  payConfirm: "Pay and confirm",
+  edit: "Edit",
+  items: "items",
+  paymentMethod: "Payment method",
+  card: "Debit or credit card",
+  cardSub: "Visa, Mastercard, Maestro",
+  eps: "eps Online-Überweisung",
+  epsSub: "Pay from your Austrian bank account",
+  klarna: "Klarna",
+  klarnaSub: "Pay now or in 30 days",
+  demoPay: "Demo mode: no money is taken. Real payments come with Stripe.",
+  yourDetails: "Your details",
+  name: "Full name",
+  phone: "Mobile number",
+  email: "Email (for your receipt)",
+  whatsapp: "Send my order status on WhatsApp",
+  terms: "I accept the AGB and privacy policy",
+  totalVat: "Total incl. VAT",
+  pay: "Pay",
+  placing: "Placing your order…",
+  order: "Order",
+  arriving: "Arriving around",
+  readyAround: "Ready around",
+  trackIntroDelivery: "We will message you when the driver leaves.",
+  trackIntroPickup: "We will message you when it is ready to collect.",
+  yourOrder: "Your order",
+  paidWith: "Paid",
+  orderAgain: "Order again",
+  step: "Step",
+  of: "of",
+  notFound: "We could not find this order. Check the link in your message.",
+  st_received: "Order received and paid",
+  st_cooking: "Cooking now",
+  st_ready: "Ready",
+  st_ready_pickup: "Ready to collect",
+  st_out_for_delivery: "Out for delivery",
+  st_completed: "Delivered",
+  st_completed_pickup: "Collected",
+  st_cancelled: "Cancelled",
+  st_pending_payment: "Waiting for payment",
+  err_ORDERS_PAUSED: "Ordering is paused right now. Please try again later.",
+  err_SLOT_UNAVAILABLE: "That time just filled up. Please pick another time.",
+  err_MISSING_CONTACT: "Please add your name and mobile number.",
+  err_MISSING_ADDRESS: "Please add your street and postcode.",
+  err_EMPTY_CART: "Your basket is empty.",
+  err_generic: "Something went wrong. Please try again or call us.",
+};
+
+const de: typeof en = {
+  tagline: "Ventures · Wilfersdorf, Österreich",
+  heroEyebrow: "Gekocht und ungekocht · Lieferung nach Hause",
+  heroTitle: "Nigerianische Gerichte und Lebensmittel, direkt an deine Tür.",
+  orderUntil: "Bestellungen für heute bis",
+  eventCatering: "Event-Catering",
+  dishes: "Gerichte",
+  groceries: "Lebensmittel",
+  events: "Events",
+  groceriesNote: "In Wilfersdorf verpackt und geliefert oder verschickt. Kühl und trocken lagern.",
+  eventsNote: "Party-Platten für Hochzeiten, Geburtstage und Feiern. Ein paar Tage im Voraus bestellen oder für ein Angebot anrufen.",
+  paused: "Wir nehmen gerade keine neuen Bestellungen an. Bitte später wieder vorbeischauen oder anrufen.",
+  planningEvent: "Planst du ein Event?",
+  callUs: "Anrufen",
+  viewBasket: "Warenkorb",
+  add: "Hinzufügen",
+  remove: "Entfernen",
+  photoComing: "Foto folgt",
+  yourBasket: "Dein Warenkorb",
+  emptyBasket: "Dein Warenkorb ist leer.",
+  backToMenu: "Zurück zur Speisekarte",
+  howWant: "Wie möchtest du es?",
+  delivery: "Lieferung",
+  pickup: "Abholung",
+  chooseDay: "Tag wählen",
+  chooseTime: "Uhrzeit wählen",
+  slotsNote: "Zeiten schließen, wenn die Küche ausgebucht ist, damit jede Bestellung pünktlich kommt.",
+  full: "Voll",
+  lastSpot: "Letzter Platz",
+  open: "Frei",
+  closed: "Geschlossen",
+  noSlots: "An diesem Tag sind keine Zeiten mehr frei. Bitte einen anderen Tag wählen.",
+  deliveryAddress: "Lieferadresse",
+  street: "Straße und Hausnummer",
+  postcode: "PLZ",
+  door: "Stiege / Tür",
+  pickupTitle: "Abholung in der Darvoo Küche",
+  pickupAddress: "Mistelbacherstraße 31, Wilfersdorf. Wir schreiben dir, sobald es fertig ist.",
+  kitchenNote: "Notiz für die Küche (optional)",
+  subtotal: "Zwischensumme",
+  deliveryFee: "Liefergebühr",
+  free: "Gratis",
+  total: "Gesamt",
+  continuePay: "Weiter zur Zahlung",
+  payConfirm: "Bezahlen und bestätigen",
+  edit: "Ändern",
+  items: "Artikel",
+  paymentMethod: "Zahlungsart",
+  card: "Debit- oder Kreditkarte",
+  cardSub: "Visa, Mastercard, Maestro",
+  eps: "eps Online-Überweisung",
+  epsSub: "Direkt vom österreichischen Bankkonto",
+  klarna: "Klarna",
+  klarnaSub: "Jetzt oder in 30 Tagen bezahlen",
+  demoPay: "Demo-Modus: Es wird kein Geld abgebucht. Echte Zahlungen kommen mit Stripe.",
+  yourDetails: "Deine Daten",
+  name: "Vor- und Nachname",
+  phone: "Handynummer",
+  email: "E-Mail (für die Rechnung)",
+  whatsapp: "Bestellstatus per WhatsApp senden",
+  terms: "Ich akzeptiere die AGB und Datenschutzerklärung",
+  totalVat: "Gesamt inkl. MwSt.",
+  pay: "Bezahlen",
+  placing: "Bestellung wird gesendet…",
+  order: "Bestellung",
+  arriving: "Ankunft ca.",
+  readyAround: "Fertig ca.",
+  trackIntroDelivery: "Wir schreiben dir, sobald der Fahrer losfährt.",
+  trackIntroPickup: "Wir schreiben dir, sobald du abholen kannst.",
+  yourOrder: "Deine Bestellung",
+  paidWith: "Bezahlt",
+  orderAgain: "Nochmal bestellen",
+  step: "Schritt",
+  of: "von",
+  notFound: "Diese Bestellung wurde nicht gefunden. Bitte den Link in deiner Nachricht prüfen.",
+  st_received: "Bestellung erhalten und bezahlt",
+  st_cooking: "Wird gekocht",
+  st_ready: "Fertig",
+  st_ready_pickup: "Bereit zur Abholung",
+  st_out_for_delivery: "Unterwegs",
+  st_completed: "Geliefert",
+  st_completed_pickup: "Abgeholt",
+  st_cancelled: "Storniert",
+  st_pending_payment: "Warte auf Zahlung",
+  err_ORDERS_PAUSED: "Bestellungen sind gerade pausiert. Bitte später nochmal versuchen.",
+  err_SLOT_UNAVAILABLE: "Diese Zeit ist gerade voll geworden. Bitte eine andere wählen.",
+  err_MISSING_CONTACT: "Bitte Name und Handynummer angeben.",
+  err_MISSING_ADDRESS: "Bitte Straße und PLZ angeben.",
+  err_EMPTY_CART: "Dein Warenkorb ist leer.",
+  err_generic: "Etwas ist schiefgelaufen. Bitte nochmal versuchen oder anrufen.",
+};
+
+export type Dict = typeof en;
+const dicts: Record<Lang, Dict> = { en, de };
+
+const Ctx = createContext<{ lang: Lang; t: Dict; setLang: (l: Lang) => void }>({
+  lang: "en",
+  t: en,
+  setLang: () => {},
+});
+
+export function I18nProvider({ children }: { children: ReactNode }) {
+  const [lang, setLangState] = useState<Lang>("en");
+  useEffect(() => {
+    try {
+      const saved = localStorage.getItem("darvoo-lang") as Lang | null;
+      if (saved === "en" || saved === "de") setLangState(saved);
+      else if (navigator.language.toLowerCase().startsWith("de")) setLangState("de");
+    } catch {}
+  }, []);
+  useEffect(() => {
+    document.documentElement.lang = lang;
+  }, [lang]);
+  const setLang = (l: Lang) => {
+    setLangState(l);
+    try {
+      localStorage.setItem("darvoo-lang", l);
+    } catch {}
+  };
+  return <Ctx.Provider value={{ lang, t: dicts[lang], setLang }}>{children}</Ctx.Provider>;
+}
+
+export const useI18n = () => useContext(Ctx);
+
+export function errorText(t: Dict, message: string | undefined) {
+  const code = (message || "").match(/[A-Z_]{6,}/)?.[0];
+  const key = ("err_" + code) as keyof Dict;
+  return code && key in t ? t[key] : t.err_generic;
+}
