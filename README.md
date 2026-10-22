@@ -11,8 +11,9 @@ Built with Next.js 15 and Supabase (Postgres, Auth, Realtime).
 | `/` | Menu with three tabs (Dishes, Food stuffs, Events), photos from Darvoo's own catalogue, EN/DE switch |
 | `/basket` | Basket, delivery or pickup, day and time slot (slots close when full), address, note for the kitchen |
 | `/checkout` | Contact details, payment method, terms, places the order |
-| `/track/[token]` | Live order status for the customer (refreshes every 15 s); `/track` lists orders placed on this device |
-| `/kitchen` | Staff only. Order board by day, one tap to move an order forward, pause ordering, updates in real time |
+| `/track/?t=…` | Live order status for the customer (refreshes every 15 s); `/track/` alone lists orders placed on this device |
+| `/kitchen` | Staff only. **Orders**: live board, one tap to move an order forward, WhatsApp update button, pause ordering. **Menu & prices**: edit prices, sizes, allergen codes, hide items. **Slots & settings**: delivery fee, same day cut-off, booking window, time slots and capacity |
+| `/impressum`, `/agb`, `/datenschutz`, `/allergene` | Legal pages (German). Yellow highlights mark facts the business still has to fill in |
 
 ## How ordering works
 
@@ -44,35 +45,44 @@ select id from auth.users where email = 'kitchen@example.com';
 
 ## Change prices, menu, slots, settings
 
-All in the Supabase **Table editor**, no deploy needed (the menu page refreshes within a minute):
+Changes show on the website immediately, no deploy needed.
 
-* `products`: `price_cents` (3000 = €30,00), `active` to hide an item, `sort` for order
+Easiest: sign in at `/kitchen` and use the **Menu & prices** and **Slots & settings** tabs.
+
+Or directly in Supabase:
+* `products`: `price_cents` (3000 = €30,00), `allergens` (e.g. `A, C, D`), `active` to hide an item, `sort` for order
 * `slot_templates`: delivery and pickup times and how many orders each can take
 * `settings`: `delivery_fee_cents`, `same_day_cutoff`, `booking_days`, `accepting_orders`
 
 Photos live in `public/menu/`. Add a file and put its path in `image_path`.
 
-## Deploy (Vercel)
+## Deploy (Cloudflare Pages)
 
-1. Import this repo at vercel.com/new.
-2. Add the two env vars from `.env.example`.
-3. Deploy, then point `darvooventures.com` at it under *Domains*.
+The app is a fully static site (`next build` writes it to `out/`), so it runs on any static host.
+
+1. Cloudflare dashboard → **Workers & Pages → Create → Pages → Connect to Git** → pick `Afeez-Ola/darvoo-ventures`.
+2. Framework preset: **None**. Build command: `npm run build`. Build output directory: `out`.
+3. Save and deploy. Every push to `main` redeploys automatically.
+4. Optional: **Custom domains** → add `darvooventures.com`.
+
+No environment variables are needed: the Supabase URL and publishable key are public values with defaults in `lib/supabase.ts`. Security comes from the database rules, not from hiding the key.
 
 ## Going live with Stripe (before taking real money)
 
 1. Create a Stripe account for the business and enable **cards, Apple Pay, Google Pay, eps and Klarna**.
-2. Add a server route `app/api/checkout/route.ts` that calls `place_order()`, then creates a Stripe Checkout Session with the order total and `metadata.order_token`, and redirects to it.
-3. Add a webhook route (`checkout.session.completed`). It verifies the Stripe signature, then sets `status = 'received', paid_at = now()` using the Supabase **service role key**, kept server-side only.
+2. Add a Cloudflare Pages Function `functions/api/checkout.ts` (the site itself is static) that calls `place_order()`, then creates a Stripe Checkout Session with the order total and `metadata.order_token`, and redirects to it.
+3. Add a webhook function `functions/api/stripe-webhook.ts` (`checkout.session.completed`). It verifies the Stripe signature, then sets `status = 'received', paid_at = now()` using the Supabase **service role key**, kept server-side only.
 4. Delete `mock_pay()` from the database and remove its call in `app/checkout/page.tsx`.
 
 ## Still to do
 
 - [ ] Real prices, tray sizes, delivery area and fee
 - [ ] Stripe (above)
-- [ ] WhatsApp / SMS status messages (e.g. a Supabase Edge Function on `order_events` inserts, via the WhatsApp Business API)
-- [ ] Impressum, AGB, privacy policy pages, and allergen codes (A to R) per dish
+- [ ] Automatic WhatsApp messages (today the kitchen taps "WhatsApp update", which opens WhatsApp with the message ready to send; full automation needs the WhatsApp Business API)
+- [ ] Fill the yellow gaps in Impressum, AGB and Datenschutz, and have them checked
+- [ ] Allergen codes for every item (Kitchen → Menu & prices)
 - [ ] Own product photos for food stuffs (some flyer images look like stock photos)
 
 ## Database
 
-SQL for a fresh project is in `supabase/migrations/`. Apply `0001_init.sql`, then `0002_seed.sql`.
+SQL for a fresh project is in `supabase/migrations/`. Apply them in order (`0001`, `0002`, `0003`).

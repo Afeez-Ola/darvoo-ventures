@@ -5,6 +5,7 @@ import type { Session } from "@supabase/supabase-js";
 import { supabaseBrowser } from "@/lib/supabase";
 import { clock, dayLabel, euro, hhmm, viennaToday } from "@/lib/format";
 import type { Mode, OrderStatus } from "@/lib/types";
+import { MenuEditor, SettingsEditor } from "./Editors";
 import "./kitchen.css";
 
 interface KOrder {
@@ -23,6 +24,8 @@ interface KOrder {
   total_cents: number;
   paid_at: string | null;
   created_at: string;
+  public_token: string;
+  whatsapp_updates: boolean;
   order_items: { name: string; qty: number }[];
 }
 
@@ -42,6 +45,32 @@ function nextStep(o: KOrder): { to: OrderStatus; label: string } | null {
     case "out_for_delivery": return { to: "completed", label: "Mark delivered" };
     default: return null;
   }
+}
+
+/** Austrian numbers typed as 0660… become 43660…; wa.me wants digits only. */
+function waNumber(phone: string) {
+  let d = phone.replace(/[^0-9+]/g, "");
+  if (d.startsWith("+")) return d.slice(1);
+  if (d.startsWith("00")) return d.slice(2);
+  if (d.startsWith("0")) return "43" + d.slice(1);
+  return d;
+}
+
+const WA_TEXT: Partial<Record<OrderStatus, string>> = {
+  received: "wir haben deine Bestellung erhalten",
+  cooking: "deine Bestellung wird gerade gekocht",
+  ready: "deine Bestellung ist fertig",
+  out_for_delivery: "deine Bestellung ist unterwegs zu dir",
+  completed: "danke für deine Bestellung! Guten Appetit",
+  cancelled: "deine Bestellung wurde leider storniert. Wir melden uns wegen der Rückerstattung",
+};
+
+function waLink(o: KOrder) {
+  const first = o.customer_name.split(" ")[0];
+  const pickupReady = o.status === "ready" && o.mode === "pickup" ? " und kann in der Mistelbacherstraße 31 abgeholt werden" : "";
+  const link = `${window.location.origin}/track/?t=${o.public_token}`;
+  const text = `Hallo ${first}, ${WA_TEXT[o.status] ?? "hier ein Update zu deiner Bestellung"}${pickupReady} (Bestellung #${o.number}). Status live verfolgen: ${link}\n\nDarVoo Ventures`;
+  return `https://wa.me/${waNumber(o.phone)}?text=${encodeURIComponent(text)}`;
 }
 
 export default function KitchenPage() {
@@ -104,7 +133,7 @@ function Login() {
   );
 }
 
-function Board() {
+function Orders({ header }: { header: React.ReactNode }) {
   const sb = supabaseBrowser();
   const [orders, setOrders] = useState<KOrder[]>([]);
   const [accepting, setAccepting] = useState<boolean | null>(null);
@@ -115,7 +144,7 @@ function Board() {
   const load = useCallback(async () => {
     const { data } = await sb
       .from("orders")
-      .select("id,number,status,mode,slot_date,slot_time,customer_name,phone,street,postcode,door,note,total_cents,paid_at,created_at,order_items(name,qty)")
+      .select("id,number,status,mode,slot_date,slot_time,customer_name,phone,street,postcode,door,note,total_cents,paid_at,created_at,public_token,whatsapp_updates,order_items(name,qty)")
       .neq("status", "pending_payment")
       .gte("slot_date", viennaToday(-1))
       .order("slot_date")
@@ -166,12 +195,11 @@ function Board() {
 
   return (
     <div className="k-page">
-      <header className="k-head">
+      {header}
+      <header className="k-head k-head-stats">
         <div className="k-head-inner">
           <div className="k-brand">
-            <span className="display">darvoo</span>
-            <span className="k-tag">Kitchen</span>
-            <span className={`k-live ${live ? "on" : ""}`}>{live ? "Live" : "Connecting"}</span>
+            <span className={`k-live ${live ? "on" : ""}`}>{live ? "Live updates on" : "Connecting…"}</span>
           </div>
           <div className="k-stats">
             <span className="k-stat"><strong>{open}</strong> open on {dayLabel(day, "en")}</span>
@@ -179,7 +207,6 @@ function Board() {
             <button className={`k-pause ${accepting ? "" : "paused"}`} onClick={togglePause} aria-pressed={accepting === false}>
               {accepting ? "Accepting orders · Pause" : "Paused · Resume orders"}
             </button>
-            <button className="k-signout" onClick={() => sb.auth.signOut()}>Sign out</button>
           </div>
         </div>
       </header>
@@ -220,7 +247,13 @@ function Board() {
                       {o.mode === "delivery" && o.street && (
                         <p className="k-addr">{o.street}{o.door ? `, ${o.door}` : ""}, {o.postcode}</p>
                       )}
-                      <a className="k-phone" href={`tel:${o.phone.replace(/\s/g, "")}`}>{o.phone}</a>
+                      <div className="k-contact">
+                        <a className="k-phone" href={`tel:${o.phone.replace(/\s/g, "")}`}>{o.phone}</a>
+                        <a className={`k-wa ${o.whatsapp_updates ? "" : "off"}`} href={waLink(o)} target="_blank" rel="noopener"
+                          title={o.whatsapp_updates ? "Customer asked for WhatsApp updates" : "Customer did not ask for WhatsApp updates"}>
+                          WhatsApp update
+                        </a>
+                      </div>
                       <span className="k-muted small">Ordered {clock(o.created_at)}</span>
                       {step && (
                         <button className="k-btn" disabled={busyId === o.id} onClick={() => advance(o, step.to)}>{step.label}</button>
@@ -242,4 +275,36 @@ function Board() {
       </main>
     </div>
   );
+}
+
+type View = "orders" | "menu" | "settings";
+
+function Board() {
+  const sb = supabaseBrowser();
+  const [view, setView] = useState<View>("orders");
+  const header = (
+    <header className="k-head">
+      <div className="k-head-inner">
+        <div className="k-brand">
+          <span className="display">darvoo</span>
+          <span className="k-tag">Kitchen</span>
+        </div>
+        <nav className="k-tabs" aria-label="Kitchen sections">
+          {(
+            [
+              ["orders", "Orders"],
+              ["menu", "Menu & prices"],
+              ["settings", "Slots & settings"],
+            ] as [View, string][]
+          ).map(([v, label]) => (
+            <button key={v} className="k-tab" aria-pressed={view === v} onClick={() => setView(v)}>{label}</button>
+          ))}
+          <button className="k-signout" onClick={() => sb.auth.signOut()}>Sign out</button>
+        </nav>
+      </div>
+    </header>
+  );
+  if (view === "menu") return <div className="k-page">{header}<MenuEditor /></div>;
+  if (view === "settings") return <div className="k-page">{header}<SettingsEditor /></div>;
+  return <Orders header={header} />;
 }

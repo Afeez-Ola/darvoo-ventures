@@ -1,6 +1,6 @@
 "use client";
 
-import { use, useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
 import { Dict, useI18n } from "@/lib/i18n";
 import { supabaseBrowser } from "@/lib/supabase";
@@ -23,8 +23,7 @@ function label(t: Dict, s: OrderStatus, mode: "delivery" | "pickup") {
   return t[("st_" + s) as keyof Dict];
 }
 
-export default function TrackPage({ params }: { params: Promise<{ token: string }> }) {
-  const { token } = use(params);
+export default function TrackOrder({ token }: { token: string }) {
   const { t, lang } = useI18n();
   const [order, setOrder] = useState<TrackedOrder | null | undefined>(undefined);
 

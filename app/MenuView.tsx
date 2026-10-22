@@ -7,12 +7,21 @@ import { useCart } from "@/lib/cart";
 import { euro, hhmm } from "@/lib/format";
 import type { Category, Product, Settings } from "@/lib/types";
 import { Clock, Minus, Plus, Truck } from "@/components/Icons";
+import SiteFooter from "@/components/SiteFooter";
 
-export default function MenuView({ products, settings }: { products: Product[]; settings: Settings | null }) {
+export default function MenuView({
+  products,
+  settings,
+  failed,
+}: {
+  products: Product[] | null;
+  settings: Settings | null;
+  failed?: boolean;
+}) {
   const { t, lang, setLang } = useI18n();
   const cart = useCart();
   const [tab, setTab] = useState<Category>("dishes");
-  const shown = products.filter((p) => p.category === tab);
+  const shown = (products ?? []).filter((p) => p.category === tab);
   const paused = settings ? !settings.accepting_orders : false;
 
   return (
@@ -65,7 +74,15 @@ export default function MenuView({ products, settings }: { products: Product[]; 
       {tab === "groceries" && <div className="notice green">{t.groceriesNote}</div>}
       {tab === "events" && <div className="notice gold">{t.eventsNote}</div>}
 
-      <div className="grid">
+      {failed && <div className="notice red" role="alert">{t.loadFailed}</div>}
+      <div className="grid" aria-busy={products === null}>
+        {products === null &&
+          Array.from({ length: 6 }, (_, i) => (
+            <div className="card" key={i} aria-hidden="true">
+              <div className="card-photo skeleton" />
+              <div className="skeleton" style={{ height: 16, borderRadius: 6, width: "80%" }} />
+            </div>
+          ))}
         {shown.map((p) => {
           const q = cart.qtyOf(p.id);
           return (
@@ -98,6 +115,9 @@ export default function MenuView({ products, settings }: { products: Product[]; 
                 <span className="price">{euro(p.price_cents)}</span>
                 <span className="unit">{p.unit}</span>
               </div>
+              {p.allergens && (
+                <span className="unit" title={t.allergenHelp}>{t.allergens}: {p.allergens}</span>
+              )}
             </article>
           );
         })}
@@ -112,6 +132,8 @@ export default function MenuView({ products, settings }: { products: Product[]; 
           {t.callUs}
         </a>
       </div>
+
+      <SiteFooter />
 
       {cart.ready && cart.count > 0 && !paused && (
         <div className="bottombar">

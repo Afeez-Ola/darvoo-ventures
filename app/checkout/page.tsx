@@ -85,7 +85,7 @@ export default function CheckoutPage() {
     } catch {}
     rememberOrder(placed.public_token, placed.number);
     cart.clear();
-    router.push(`/track/${placed.public_token}`);
+    router.push(`/track/?t=${placed.public_token}`);
   }
 
   const methods: { id: Method; name: string; sub: string }[] = [

@@ -94,6 +94,12 @@ const en = {
   err_MISSING_ADDRESS: "Please add your street and postcode.",
   err_EMPTY_CART: "Your basket is empty.",
   err_generic: "Something went wrong. Please try again or call us.",
+  loadFailed: "The menu could not load. Check your connection and refresh.",
+  allergens: "Allergens",
+  allergenHelp: "Austrian allergen codes, see the allergen list",
+  impressum: "Imprint",
+  agb: "Terms (AGB)",
+  privacy: "Privacy",
 };
 
 const de: typeof en = {
@@ -186,6 +192,12 @@ const de: typeof en = {
   err_MISSING_ADDRESS: "Bitte Straße und PLZ angeben.",
   err_EMPTY_CART: "Dein Warenkorb ist leer.",
   err_generic: "Etwas ist schiefgelaufen. Bitte nochmal versuchen oder anrufen.",
+  loadFailed: "Die Speisekarte konnte nicht geladen werden. Bitte Verbindung prüfen und neu laden.",
+  allergens: "Allergene",
+  allergenHelp: "Allergenkennzeichnung, siehe Allergenliste",
+  impressum: "Impressum",
+  agb: "AGB",
+  privacy: "Datenschutz",
 };
 
 export type Dict = typeof en;

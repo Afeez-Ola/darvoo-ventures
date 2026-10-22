@@ -1,7 +1,8 @@
 import { createClient, SupabaseClient } from "@supabase/supabase-js";
 
-const url = process.env.NEXT_PUBLIC_SUPABASE_URL!;
-const key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
+// Public values (safe to ship to the browser). Env vars override them.
+const url = process.env.NEXT_PUBLIC_SUPABASE_URL || "https://hgnfqpxkvnbieqrbynzf.supabase.co";
+const key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || "sb_publishable_Yiw3HjyirSlh4KRRBaciiw_AQYYx4ud";
 
 let browserClient: SupabaseClient | null = null;
 

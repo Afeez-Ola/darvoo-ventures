@@ -17,6 +17,8 @@ export interface Product {
   price_cents: number;
   image_path: string | null;
   sort: number;
+  allergens: string;
+  active?: boolean;
 }
 
 export interface Settings {
