@@ -125,6 +125,7 @@ const en = {
   err_NOT_SHIPPABLE: "Only food stuffs can be shipped. Remove cooked dishes or choose delivery or pickup.",
   err_CHOOSE_OPTION: "A dish in your basket needs a choice. Please remove it and add it again.",
   choose: "Choose",
+  deliveryZones: "Delivery {near} within about 10 km of the city centre, {far} to {list}.",
 };
 
 const de: typeof en = {
@@ -248,6 +249,7 @@ const de: typeof en = {
   err_NOT_SHIPPABLE: "Nur Lebensmittel können verschickt werden. Bitte gekochte Speisen entfernen oder Lieferung bzw. Abholung wählen.",
   err_CHOOSE_OPTION: "Bei einem Gericht fehlt die Auswahl. Bitte entfernen und neu hinzufügen.",
   choose: "Auswahl",
+  deliveryZones: "Lieferung {near} im Umkreis von ca. 10 km um das Zentrum, {far} nach {list}.",
 };
 
 export type Dict = typeof en;

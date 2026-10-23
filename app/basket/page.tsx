@@ -72,7 +72,7 @@ export default function BasketPage() {
   }, [f.slot_date]);
 
   const isShip = f.mode === "shipping";
-  const fee = feeFor(f.mode, settings, cart.subtotal);
+  const fee = feeFor(f.mode, settings, cart.subtotal, f.postcode);
   const pc = f.postcode.trim();
   const pcValid = /^[1-9][0-9]{3}$/.test(pc);
   const inVienna = !!settings && settings.delivery_postcode_prefixes.some((p) => pc.startsWith(p));
@@ -185,7 +185,16 @@ export default function BasketPage() {
       ) : (
         <section className="section" aria-label={isShip ? t.shipAddress : t.deliveryAddress}>
           <h2>{isShip ? t.shipAddress : t.deliveryAddress}</h2>
-          {!isShip && <p className="hint" style={{ marginTop: -6 }}>{t.deliveryAreaNote}</p>}
+          {!isShip && (
+            <p className="hint" style={{ marginTop: -6 }}>
+              {t.deliveryAreaNote}{" "}
+              {settings && fill(t.deliveryZones, {
+                near: euro(settings.delivery_fee_cents),
+                far: euro(settings.delivery_fee_far_cents),
+                list: settings.far_postcodes.join(", "),
+              })}
+            </p>
+          )}
           <label className="field">{t.street}
             <input value={f.street} autoComplete="street-address" onChange={(e) => cart.setFulfilment({ street: e.target.value })} />
           </label>

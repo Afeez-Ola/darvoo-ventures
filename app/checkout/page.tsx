@@ -40,8 +40,8 @@ export default function CheckoutPage() {
       if (saved.email) setEmail(saved.email);
     } catch {}
     supabaseBrowser().from("settings").select(SETTINGS_COLS).single()
-      .then(({ data }) => setFee(feeFor(f.mode, data as Settings, cart.subtotal)));
-  }, [f.mode, cart.subtotal]);
+      .then(({ data }) => setFee(feeFor(f.mode, data as Settings, cart.subtotal, f.postcode)));
+  }, [f.mode, cart.subtotal, f.postcode]);
 
   useEffect(() => {
     if (placedRef.current) return;

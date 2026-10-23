@@ -31,6 +31,8 @@ export interface Settings {
   free_shipping_from_cents: number | null;
   ship_dispatch_days: number;
   delivery_postcode_prefixes: string[];
+  delivery_fee_far_cents: number;
+  far_postcodes: string[];
 }
 
 export interface Slot {
