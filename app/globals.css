@@ -173,3 +173,6 @@ img { display: block; max-width: 100%; }
 .segment.three { grid-template-columns: repeat(3, minmax(0, 1fr)); }
 .segment button:disabled { color: #a8a29e; }
 .field input[aria-invalid="true"] { border-color: var(--danger); }
+
+.opt select { width: 100%; height: 40px; border-radius: 10px; border: 1px solid var(--field); background: #fff; padding: 0 10px; font-size: 14px; color: var(--ink); }
+.sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0; }

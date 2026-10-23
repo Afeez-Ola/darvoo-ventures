@@ -136,7 +136,7 @@ export default function TrackOrder({ token }: { token: string }) {
       <section className="order-box">
         <h2>{t.yourOrder}</h2>
         {order.items.map((i, k) => (
-          <div className="sumrow" key={k}><span>{i.qty}× {i.name}</span><span>{euro(i.qty * i.unit_price_cents)}</span></div>
+          <div className="sumrow" key={k}><span>{i.qty}× {i.name}{i.option ? ` (${i.option})` : ""}</span><span>{euro(i.qty * i.unit_price_cents)}</span></div>
         ))}
         {order.fee_cents > 0 && <div className="sumrow" style={{ color: "var(--muted)" }}><span>{isShip ? t.shippingFee : t.deliveryFee}</span><span>{euro(order.fee_cents)}</span></div>}
         <div className="sumrow total"><span>{order.paid ? t.paidWith : t.st_pending_payment}</span><span>{euro(order.total_cents)}</span></div>

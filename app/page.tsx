@@ -13,7 +13,7 @@ export default function Home() {
   useEffect(() => {
     const sb = supabaseBrowser();
     Promise.all([
-      sb.from("products").select("id,category,name,unit,price_cents,image_path,sort,allergens").eq("active", true).order("sort"),
+      sb.from("products").select("id,category,name,unit,price_cents,image_path,sort,allergens,options").eq("active", true).order("sort"),
       sb.from("settings").select("accepting_orders,delivery_fee_cents,booking_days,same_day_cutoff").single(),
     ]).then(([p, s]) => {
       if (p.error) setFailed(true);

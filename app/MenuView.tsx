@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useEffect } from "react";
 import Link from "next/link";
 import { useI18n } from "@/lib/i18n";
 import { useCart } from "@/lib/cart";
@@ -21,6 +22,16 @@ export default function MenuView({
   const { t, lang, setLang } = useI18n();
   const cart = useCart();
   const [tab, setTab] = useState<Category>("dishes");
+  // chosen option per dish (defaults to its first option)
+  const [picked, setPicked] = useState<Record<string, string>>({});
+  useEffect(() => {
+    if (!products) return;
+    setPicked((prev) => {
+      const next = { ...prev };
+      products.forEach((p) => { if (p.options?.length && !p.options.includes(next[p.id])) next[p.id] = p.options[0]; });
+      return next;
+    });
+  }, [products]);
   const shown = (products ?? []).filter((p) => p.category === tab);
   const paused = settings ? !settings.accepting_orders : false;
 
@@ -85,7 +96,8 @@ export default function MenuView({
             </div>
           ))}
         {shown.map((p) => {
-          const q = cart.qtyOf(p.id);
+          const opt = p.options?.length ? picked[p.id] ?? p.options[0] : null;
+          const q = cart.qtyOf(p.id, opt);
           return (
             <article className="card" key={p.id}>
               <div className="card-photo">
@@ -95,23 +107,33 @@ export default function MenuView({
                   <div className="nophoto">{t.photoComing}</div>
                 )}
                 {!paused && q === 0 && (
-                  <button className="add-fab" aria-label={`${t.add}: ${p.name}`} onClick={() => cart.setQty(p, 1)}>
+                  <button className="add-fab" aria-label={`${t.add}: ${p.name}`} onClick={() => cart.setQty(p, 1, opt)}>
                     <Plus />
                   </button>
                 )}
                 {!paused && q > 0 && (
                   <div className="stepper">
-                    <button aria-label={`${t.remove}: ${p.name}`} onClick={() => cart.setQty(p, q - 1)}>
+                    <button aria-label={`${t.remove}: ${p.name}`} onClick={() => cart.setQty(p, q - 1, opt)}>
                       <Minus />
                     </button>
                     <span aria-live="polite">{q}</span>
-                    <button aria-label={`${t.add}: ${p.name}`} onClick={() => cart.setQty(p, q + 1)}>
+                    <button aria-label={`${t.add}: ${p.name}`} onClick={() => cart.setQty(p, q + 1, opt)}>
                       <Plus size={16} />
                     </button>
                   </div>
                 )}
               </div>
               <h2>{p.name}</h2>
+              {!!p.options?.length && (
+                <label className="opt">
+                  <span className="sr-only">{t.choose}: {p.name}</span>
+                  <select value={opt ?? ""} onChange={(e) => setPicked((x) => ({ ...x, [p.id]: e.target.value }))}>
+                    {p.options.map((o) => (
+                      <option key={o} value={o}>{o}{cart.qtyOf(p.id, o) ? ` (${cart.qtyOf(p.id, o)} in basket)` : ""}</option>
+                    ))}
+                  </select>
+                </label>
+              )}
               <div className="price-row">
                 <span className="price">{euro(p.price_cents)}</span>
                 <span className="unit">{p.unit}</span>

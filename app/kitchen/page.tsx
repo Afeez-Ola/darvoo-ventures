@@ -28,7 +28,7 @@ interface KOrder {
   created_at: string;
   public_token: string;
   whatsapp_updates: boolean;
-  order_items: { name: string; qty: number }[];
+  order_items: { name: string; qty: number; option: string | null }[];
 }
 
 const COLUMNS: { status: OrderStatus; title: string; tone: string }[] = [
@@ -174,7 +174,7 @@ function Orders({ header }: { header: React.ReactNode }) {
     const since = new Date(Date.now() - 14 * 86400000).toISOString();
     const { data } = await sb
       .from("orders")
-      .select("id,number,status,mode,slot_date,slot_time,city,tracking_code,customer_name,phone,street,postcode,door,note,total_cents,paid_at,created_at,public_token,whatsapp_updates,order_items(name,qty)")
+      .select("id,number,status,mode,slot_date,slot_time,city,tracking_code,customer_name,phone,street,postcode,door,note,total_cents,paid_at,created_at,public_token,whatsapp_updates,order_items(name,qty,option)")
       .neq("status", "pending_payment")
       .or(`slot_date.gte.${viennaToday(-1)},and(mode.eq.shipping,created_at.gte.${since})`)
       .order("created_at")
@@ -278,7 +278,7 @@ function Orders({ header }: { header: React.ReactNode }) {
                         <span className="k-time">{o.slot_time ? hhmm(o.slot_time) : "Parcel"}</span>
                       </div>
                       <ul className="k-items">
-                        {o.order_items.map((i, k) => <li key={k}>{i.qty}× {i.name}</li>)}
+                        {o.order_items.map((i, k) => <li key={k}>{i.qty}× {i.name}{i.option ? <strong> ({i.option})</strong> : null}</li>)}
                       </ul>
                       {o.note && <p className="k-note">“{o.note}”</p>}
                       <div className="k-tags">

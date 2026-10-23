@@ -10,7 +10,9 @@ const toEuroInput = (c: number) => (c / 100).toFixed(2).replace(".", ",");
 const ALLERGEN = /^[ABCDEFGHLMNOPR](\s*,\s*[ABCDEFGHLMNOPR])*$/;
 
 type Row = Product & { active: boolean };
-type Draft = { price: string; allergens: string; unit: string; active: boolean };
+type Draft = { price: string; allergens: string; unit: string; active: boolean; options: string };
+const optsText = (o: string[] | null | undefined) => (o ?? []).join(", ");
+const optsList = (t: string) => t.split(",").map((x) => x.trim()).filter(Boolean);
 
 export function MenuEditor() {
   const sb = supabaseBrowser();
@@ -33,14 +35,14 @@ export function MenuEditor() {
   }, []);
 
   const draftOf = (r: Row): Draft =>
-    drafts[r.id] ?? { price: toEuroInput(r.price_cents), allergens: r.allergens, unit: r.unit, active: r.active };
+    drafts[r.id] ?? { price: toEuroInput(r.price_cents), allergens: r.allergens, unit: r.unit, active: r.active, options: optsText(r.options) };
   const setDraft = (r: Row, patch: Partial<Draft>) => setDrafts((d) => ({ ...d, [r.id]: { ...draftOf(r), ...patch } }));
 
   const changed = useMemo(
     () =>
       (rows ?? []).filter((r) => {
         const d = drafts[r.id];
-        return d && (toCents(d.price) !== r.price_cents || d.allergens !== r.allergens || d.unit !== r.unit || d.active !== r.active);
+        return d && (toCents(d.price) !== r.price_cents || d.allergens !== r.allergens || d.unit !== r.unit || d.active !== r.active || d.options !== optsText(r.options));
       }),
     [rows, drafts]
   );
@@ -58,7 +60,7 @@ export function MenuEditor() {
       const d = drafts[r.id];
       const { error } = await sb
         .from("products")
-        .update({ price_cents: toCents(d.price), allergens: d.allergens.trim().toUpperCase().replace(/\s*,\s*/g, ", "), unit: d.unit.trim(), active: d.active })
+        .update({ price_cents: toCents(d.price), allergens: d.allergens.trim().toUpperCase().replace(/\s*,\s*/g, ", "), unit: d.unit.trim(), active: d.active, options: optsList(d.options) })
         .eq("id", r.id);
       if (error) {
         setMsg(`Could not save ${r.name}: ${error.message}`);
@@ -104,7 +106,7 @@ export function MenuEditor() {
       <div className="k-table-wrap">
         <table className="k-table">
           <thead>
-            <tr><th>Item</th><th>Price €</th><th>Size / unit</th><th>Allergens (A to R)</th><th>On menu</th></tr>
+            <tr><th>Item</th><th>Price €</th><th>Size / unit</th><th>Customer chooses (comma separated)</th><th>Allergens (A to R)</th><th>On menu</th></tr>
           </thead>
           <tbody>
             {list.map((r) => {
@@ -120,6 +122,7 @@ export function MenuEditor() {
                   </td>
                   <td><input aria-label={`Price for ${r.name}`} inputMode="decimal" value={d.price} onChange={(e) => setDraft(r, { price: e.target.value })} style={{ width: 90 }} /></td>
                   <td><input aria-label={`Unit for ${r.name}`} value={d.unit} onChange={(e) => setDraft(r, { unit: e.target.value })} style={{ width: 120 }} /></td>
+                  <td><input aria-label={`Choices for ${r.name}`} value={d.options} placeholder="e.g. with fish, with meat" onChange={(e) => setDraft(r, { options: e.target.value })} style={{ width: 210 }} /></td>
                   <td><input aria-label={`Allergens for ${r.name}`} value={d.allergens} placeholder="e.g. A, C, D" onChange={(e) => setDraft(r, { allergens: e.target.value })} style={{ width: 120 }} /></td>
                   <td>
                     <label className="check" style={{ minHeight: 0 }}>

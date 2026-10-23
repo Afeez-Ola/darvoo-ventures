@@ -18,6 +18,7 @@ export interface Product {
   image_path: string | null;
   sort: number;
   allergens: string;
+  options: string[];
   active?: boolean;
 }
 
@@ -56,6 +57,6 @@ export interface TrackedOrder {
   subtotal_cents: number;
   fee_cents: number;
   total_cents: number;
-  items: { name: string; qty: number; unit_price_cents: number }[];
+  items: { name: string; option: string | null; qty: number; unit_price_cents: number }[];
   events: { status: OrderStatus; at: string }[];
 }

@@ -9,6 +9,8 @@ export interface CartLine {
   unit: string;
   price_cents: number;
   qty: number;
+  /** the customer's choice for dishes that need one, e.g. "with fish" */
+  option?: string | null;
 }
 
 export interface Fulfilment {
@@ -33,12 +35,17 @@ const emptyFulfilment: Fulfilment = {
   note: "",
 };
 
+type ProductLike = Pick<Product, "id" | "name" | "unit" | "price_cents">;
+
+export const lineKey = (id: string, option?: string | null) => `${id}|${option ?? ""}`;
+
 interface CartCtx {
   lines: CartLine[];
   count: number;
   subtotal: number;
-  qtyOf: (id: string) => number;
-  setQty: (p: Pick<Product, "id" | "name" | "unit" | "price_cents">, qty: number) => void;
+  /** quantity of one product; with an option, of that choice only */
+  qtyOf: (id: string, option?: string | null) => number;
+  setQty: (p: ProductLike, qty: number, option?: string | null) => void;
   clear: () => void;
   fulfilment: Fulfilment;
   setFulfilment: (patch: Partial<Fulfilment>) => void;
@@ -81,15 +88,18 @@ export function CartProvider({ children }: { children: ReactNode }) {
       subtotal,
       ready,
       fulfilment,
-      qtyOf: (id) => lines.find((l) => l.product_id === id)?.qty ?? 0,
-      setQty: (p, qty) =>
+      qtyOf: (id, option) =>
+        lines
+          .filter((l) => l.product_id === id && (option === undefined || (l.option ?? null) === (option ?? null)))
+          .reduce((a, l) => a + l.qty, 0),
+      setQty: (p, qty, option = null) =>
         setLines((prev) => {
-          const rest = prev.filter((l) => l.product_id !== p.id);
+          const key = lineKey(p.id, option);
+          const rest = prev.filter((l) => lineKey(l.product_id, l.option) !== key);
           if (qty <= 0) return rest;
-          const existing = prev.find((l) => l.product_id === p.id);
-          const line = { product_id: p.id, name: p.name, unit: p.unit, price_cents: p.price_cents, qty: Math.min(qty, 50) };
-          if (!existing) return [...prev, line];
-          return prev.map((l) => (l.product_id === p.id ? line : l));
+          const line: CartLine = { product_id: p.id, name: p.name, unit: p.unit, price_cents: p.price_cents, qty: Math.min(qty, 50), option };
+          const exists = prev.some((l) => lineKey(l.product_id, l.option) === key);
+          return exists ? prev.map((l) => (lineKey(l.product_id, l.option) === key ? line : l)) : [...prev, line];
         }),
       clear: () => {
         setLines([]);

@@ -123,6 +123,8 @@ const en = {
   err_OUTSIDE_DELIVERY_AREA: "We only deliver cooked food in Vienna. Choose pickup, or shipping for food stuffs.",
   err_BAD_POSTCODE: "Please enter a 4 digit Austrian postcode.",
   err_NOT_SHIPPABLE: "Only food stuffs can be shipped. Remove cooked dishes or choose delivery or pickup.",
+  err_CHOOSE_OPTION: "A dish in your basket needs a choice. Please remove it and add it again.",
+  choose: "Choose",
 };
 
 const de: typeof en = {
@@ -244,6 +246,8 @@ const de: typeof en = {
   err_OUTSIDE_DELIVERY_AREA: "Gekochte Speisen liefern wir nur in Wien. Bitte Abholung wählen, oder Versand für Lebensmittel.",
   err_BAD_POSTCODE: "Bitte eine 4-stellige österreichische PLZ angeben.",
   err_NOT_SHIPPABLE: "Nur Lebensmittel können verschickt werden. Bitte gekochte Speisen entfernen oder Lieferung bzw. Abholung wählen.",
+  err_CHOOSE_OPTION: "Bei einem Gericht fehlt die Auswahl. Bitte entfernen und neu hinzufügen.",
+  choose: "Auswahl",
 };
 
 export type Dict = typeof en;

@@ -103,16 +103,19 @@ export default function BasketPage() {
 
       <section className="box" aria-label="Items">
         {cart.lines.map((l) => (
-          <div className="line" key={l.product_id}>
+          <div className="line" key={`${l.product_id}|${l.option ?? ""}`}>
             <span className="qty-tag">{l.qty}×</span>
-            <span style={{ flex: 1, fontSize: 15, fontWeight: 500 }}>{l.name}</span>
+            <span style={{ flex: 1, fontSize: 15, fontWeight: 500 }}>
+              {l.name}
+              {l.option && <span style={{ display: "block", fontSize: 13, fontWeight: 400, color: "var(--muted)" }}>{l.option}</span>}
+            </span>
             <span style={{ display: "flex", gap: 2 }}>
               <button className="back" style={{ border: 0, background: "none" }} aria-label={`${t.remove}: ${l.name}`}
-                onClick={() => cart.setQty({ id: l.product_id, name: l.name, unit: l.unit, price_cents: l.price_cents }, l.qty - 1)}>
+                onClick={() => cart.setQty({ id: l.product_id, name: l.name, unit: l.unit, price_cents: l.price_cents }, l.qty - 1, l.option ?? null)}>
                 <Minus />
               </button>
               <button className="back" style={{ border: 0, background: "none" }} aria-label={`${t.add}: ${l.name}`}
-                onClick={() => cart.setQty({ id: l.product_id, name: l.name, unit: l.unit, price_cents: l.price_cents }, l.qty + 1)}>
+                onClick={() => cart.setQty({ id: l.product_id, name: l.name, unit: l.unit, price_cents: l.price_cents }, l.qty + 1, l.option ?? null)}>
                 <Plus size={16} />
               </button>
             </span>

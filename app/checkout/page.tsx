@@ -71,7 +71,7 @@ export default function CheckoutPage() {
         door: f.door,
         note: f.note,
         payment_method: method,
-        items: cart.lines.map((l) => ({ product_id: l.product_id, qty: l.qty })),
+        items: cart.lines.map((l) => ({ product_id: l.product_id, qty: l.qty, option: l.option ?? null })),
       },
     });
     const placed = Array.isArray(data) ? data[0] : data;
