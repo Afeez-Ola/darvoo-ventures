@@ -19,7 +19,8 @@ export default function BasketPage() {
   const f = cart.fulfilment;
   const [settings, setSettings] = useState<Settings | null>(null);
   const [slots, setSlots] = useState<Slot[] | null>(null);
-  const [categories, setCategories] = useState<Record<string, Category> | null>(null);
+  // categories of the basket items, tagged with the basket they were loaded for
+  const [cats, setCats] = useState<{ key: string; map: Record<string, Category> } | null>(null);
 
   useEffect(() => {
     supabaseBrowser().from("settings").select(SETTINGS_COLS).single()
@@ -29,13 +30,18 @@ export default function BasketPage() {
   // which basket items are food stuffs (only those can be posted)
   const ids = cart.lines.map((l) => l.product_id).sort().join(",");
   useEffect(() => {
-    if (!ids) return setCategories({});
+    if (!cart.ready || !ids) return;
+    let live = true;
     supabaseBrowser().from("products").select("id,category").in("id", ids.split(","))
-      .then(({ data }) => setCategories(Object.fromEntries((data ?? []).map((p) => [p.id, p.category as Category]))));
-  }, [ids]);
+      .then(({ data }) => {
+        if (live) setCats({ key: ids, map: Object.fromEntries((data ?? []).map((p) => [p.id, p.category as Category])) });
+      });
+    return () => { live = false; };
+  }, [ids, cart.ready]);
+  const categories = cats && cats.key === ids ? cats.map : null; // null until loaded for this basket
   const canShip = !!categories && cart.lines.length > 0 && cart.lines.every((l) => categories[l.product_id] === "groceries");
 
-  // a basket with cooked food cannot stay on shipping
+  // a basket with cooked food cannot stay on shipping (only decided once categories are loaded)
   useEffect(() => {
     if (categories && f.mode === "shipping" && !canShip) cart.setFulfilment({ mode: "delivery" });
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -120,7 +126,7 @@ export default function BasketPage() {
         <div className="segment three">
           <button aria-pressed={f.mode === "delivery"} onClick={() => cart.setFulfilment({ mode: "delivery" })}>{t.delivery}</button>
           <button aria-pressed={f.mode === "pickup"} onClick={() => cart.setFulfilment({ mode: "pickup" })}>{t.pickup}</button>
-          <button aria-pressed={isShip} disabled={!canShip} onClick={() => cart.setFulfilment({ mode: "shipping" })}>{t.shipping}</button>
+          <button aria-pressed={isShip} disabled={!canShip && !isShip} onClick={() => cart.setFulfilment({ mode: "shipping" })}>{t.shipping}</button>
         </div>
         {categories && !canShip && <p className="hint">{t.shipOnlyGroceries}</p>}
         {isShip && settings && (
