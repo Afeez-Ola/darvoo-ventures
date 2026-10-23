@@ -1,0 +1,60 @@
+{
+  "packageId": "com.darvooventures.app",
+  "host": "darvooventures.com",
+  "name": "Darvoo Ventures",
+  "launcherName": "Darvoo",
+  "display": "standalone",
+  "themeColor": "#0B6B34",
+  "themeColorDark": "#000000",
+  "navigationColor": "#0B6B34",
+  "navigationColorDark": "#000000",
+  "navigationDividerColor": "#000000",
+  "navigationDividerColorDark": "#000000",
+  "backgroundColor": "#FFFFFF",
+  "enableNotifications": false,
+  "startUrl": "/",
+  "iconUrl": "https://darvooventures.com/icons/icon-512.png",
+  "maskableIconUrl": "https://darvooventures.com/icons/maskable-512.png",
+  "splashScreenFadeOutDuration": 300,
+  "signingKey": {
+    "path": "/home/claude/darvoo-twa/darvoo-upload.keystore",
+    "alias": "darvoo-upload"
+  },
+  "appVersionName": "1.0.0",
+  "appVersionCode": 1,
+  "shortcuts": [
+    {
+      "name": "Track my order",
+      "shortName": "Track",
+      "url": "https://darvooventures.com/track/",
+      "chosenIconUrl": "https://darvooventures.com/icons/icon-192.png"
+    },
+    {
+      "name": "Basket",
+      "shortName": "Basket",
+      "url": "https://darvooventures.com/basket/",
+      "chosenIconUrl": "https://darvooventures.com/icons/icon-192.png"
+    }
+  ],
+  "generatorApp": "unknown",
+  "webManifestUrl": "https://darvooventures.com/manifest.webmanifest",
+  "fallbackType": "customtabs",
+  "features": {},
+  "alphaDependencies": {
+    "enabled": false
+  },
+  "enableSiteSettingsShortcut": true,
+  "isChromeOSOnly": false,
+  "isMetaQuest": false,
+  "fullScopeUrl": "https://darvooventures.com/",
+  "minSdkVersion": 24,
+  "orientation": "portrait",
+  "fingerprints": [],
+  "additionalTrustedOrigins": [],
+  "retainedBundles": [],
+  "protocolHandlers": [],
+  "fileHandlers": [],
+  "launchHandlerClientMode": "",
+  "displayOverride": [],
+  "appVersion": "1.0.0"
+}

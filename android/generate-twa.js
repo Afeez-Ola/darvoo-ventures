@@ -1,0 +1,20 @@
+const { TwaManifest, TwaGenerator, ConsoleLog } = require('@bubblewrap/core');
+(async () => {
+  const log = new ConsoleLog('gen');
+  const m = await TwaManifest.fromWebManifest('https://darvooventures.com/manifest.webmanifest');
+  m.packageId = 'com.darvooventures.app';
+  m.name = 'Darvoo Ventures';
+  m.launcherName = 'Darvoo';
+  m.host = 'darvooventures.com';
+  m.startUrl = '/';
+  m.themeColor = m.themeColor; m.navigationColor = m.themeColor;
+  m.appVersionName = '1.0.0'; m.appVersionCode = 1;
+  m.signingKey = { path: './darvoo-upload.keystore', alias: 'darvoo-upload' };
+  m.fallbackType = 'customtabs';
+  m.enableNotifications = false;
+  m.orientation = 'portrait'; m.minSdkVersion = 24;
+  m.fullScopeUrl = new URL('https://darvooventures.com/');
+  await m.saveToFile('./android/twa-manifest.json');
+  await new TwaGenerator().createTwaProject('./android', m, log);
+  console.log('done', m.packageId, m.iconUrl, m.maskableIconUrl);
+})().catch(e => { console.error(e); process.exit(1); });
