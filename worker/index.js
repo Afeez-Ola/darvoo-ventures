@@ -32,6 +32,10 @@ export default {
     for (const [k, v] of Object.entries(SECURITY_HEADERS)) out.headers.set(k, v);
     if (url.pathname.startsWith("/kitchen")) out.headers.set("X-Robots-Tag", "noindex, nofollow");
     if (url.pathname.startsWith("/_next/static/")) out.headers.set("Cache-Control", "public, max-age=31536000, immutable");
+    // the service worker must always be fresh, so app updates reach phones quickly
+    if (url.pathname === "/sw.js") out.headers.set("Cache-Control", "no-cache");
+    // Android app link verification (Trusted Web Activity)
+    if (url.pathname === "/.well-known/assetlinks.json") out.headers.set("Content-Type", "application/json");
     return out;
   },
 };

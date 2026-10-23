@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#0B6B34">
+<title>Offline · Darvoo Ventures</title>
+<style>
+  :root { --green: #0b6b34; --gold: #ffd866; --ink: #1c1917; --muted: #57534e; }
+  * { box-sizing: border-box; }
+  body { margin: 0; min-height: 100dvh; display: flex; align-items: center; justify-content: center; padding: 24px;
+         font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; background: #fff; color: var(--ink); }
+  main { max-width: 420px; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 14px; }
+  img { width: 72px; height: 72px; border-radius: 18px; }
+  h1 { margin: 8px 0 0; font-size: 24px; line-height: 30px; }
+  p { margin: 0; font-size: 15px; line-height: 22px; color: var(--muted); }
+  .de { font-size: 14px; }
+  button { margin-top: 8px; height: 52px; padding: 0 28px; border: 0; border-radius: 26px; background: var(--green);
+           color: #fff; font-size: 16px; font-weight: 700; cursor: pointer; }
+  a { color: var(--green); font-weight: 700; }
+</style>
+</head>
+<body>
+<main>
+  <img src="/icons/icon-192.png" alt="">
+  <h1>You're offline</h1>
+  <p>Check your internet connection and try again. Your basket is saved on this phone.</p>
+  <p class="de">Keine Internetverbindung. Bitte versuche es gleich noch einmal. Dein Warenkorb bleibt gespeichert.</p>
+  <button onclick="location.reload()">Try again · Erneut versuchen</button>
+  <p>Or call us: <a href="tel:+436767835226">+43 676 7835226</a></p>
+</main>
+</body>
+</html>

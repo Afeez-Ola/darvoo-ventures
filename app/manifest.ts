@@ -22,8 +22,8 @@ export default function manifest(): MetadataRoute.Manifest {
       { src: "/icons/maskable-512.png", sizes: "512x512", type: "image/png", purpose: "maskable" },
     ],
     shortcuts: [
-      { name: "Track my order", short_name: "Track", url: "/track/" },
-      { name: "Basket", url: "/basket/" },
+      { name: "Track my order", short_name: "Track", url: "/track/", icons: [{ src: "/icons/icon-192.png", sizes: "192x192", type: "image/png" }] },
+      { name: "Basket", short_name: "Basket", url: "/basket/", icons: [{ src: "/icons/icon-192.png", sizes: "192x192", type: "image/png" }] },
     ],
   };
 }

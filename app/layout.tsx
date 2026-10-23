@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { Bricolage_Grotesque, DM_Sans } from "next/font/google";
 import { I18nProvider } from "@/lib/i18n";
 import { CartProvider } from "@/lib/cart";
+import RegisterSW from "@/components/RegisterSW";
 import "./globals.css";
 
 const display = Bricolage_Grotesque({ subsets: ["latin"], weight: ["600", "800"], variable: "--font-display" });
@@ -35,6 +36,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <body>
         <I18nProvider>
           <CartProvider>{children}</CartProvider>
+          <RegisterSW />
         </I18nProvider>
       </body>
     </html>

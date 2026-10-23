@@ -1,0 +1,10 @@
+[
+  {
+    "relation": ["delegate_permission/common.handle_all_urls"],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "com.darvooventures.app",
+      "sha256_cert_fingerprints": ["32:68:0E:0E:E0:5B:EC:57:6D:E1:5A:BF:25:0F:59:6C:82:AD:78:4D:CB:3E:F2:03:69:C1:B9:F9:D1:85:96:57"]
+    }
+  }
+]
