@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { errorText, useI18n } from "@/lib/i18n";
@@ -26,6 +26,8 @@ export default function CheckoutPage() {
   const [whatsapp, setWhatsapp] = useState(true);
   const [terms, setTerms] = useState(false);
   const [busy, setBusy] = useState(false);
+  // set once the order is placed, so emptying the basket does not bounce us back to /basket
+  const placedRef = useRef(false);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
@@ -40,7 +42,8 @@ export default function CheckoutPage() {
   }, [f.mode]);
 
   useEffect(() => {
-    if (cart.ready && (cart.count === 0 || !f.slot_date || !f.slot_time)) router.replace("/basket");
+    if (placedRef.current) return;
+    if (cart.ready && (cart.count === 0 || !f.slot_date || !f.slot_time)) router.replace("/basket/");
   }, [cart.ready, cart.count, f.slot_date, f.slot_time, router]);
 
   const total = cart.subtotal + fee;
@@ -84,8 +87,9 @@ export default function CheckoutPage() {
       localStorage.setItem("darvoo-contact", JSON.stringify({ name, phone, email }));
     } catch {}
     rememberOrder(placed.public_token, placed.number);
+    placedRef.current = true;
+    router.replace(`/track/?t=${placed.public_token}`);
     cart.clear();
-    router.push(`/track/?t=${placed.public_token}`);
   }
 
   const methods: { id: Method; name: string; sub: string }[] = [
