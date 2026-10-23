@@ -1,0 +1,8 @@
+User-agent: *
+Allow: /
+Disallow: /kitchen/
+Disallow: /track/
+Disallow: /checkout/
+Disallow: /basket/
+
+Sitemap: https://darvooventures.com/sitemap.xml

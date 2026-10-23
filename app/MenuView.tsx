@@ -57,7 +57,7 @@ export default function MenuView({
       </header>
 
       <section className="hero">
-        <img src="/hero.jpg" alt="Darvoo serving at the Flaniermarkt Neubaugasse in Vienna" />
+        <img src="/hero.jpg" alt="Victoria from Darvoo serving jollof rice to a customer at a street market in Vienna" />
         <div className="hero-body">
           <span className="eyebrow">{t.heroEyebrow}</span>
           <h1 className="display">{t.heroTitle}</h1>

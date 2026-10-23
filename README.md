@@ -62,7 +62,8 @@ The app is a fully static site (`next build` writes it to `out/`). It is deploye
 
 * Build command: `npm run build`. Deploy command: `npx wrangler deploy`.
 * Every push to `main` rebuilds and redeploys automatically.
-* Live at `https://darvoo-ventures.afeezbolajiola.workers.dev`. Add `darvooventures.com` under the Worker's **Domains** tab.
+* Live at **https://darvooventures.com**. `worker/index.js` redirects `www.`, `http://` and the old workers.dev address there (301) and adds security headers (HSTS, CSP, no framing).
+* Both custom domains are declared in `wrangler.toml` (`routes`), so a deploy recreates them if they are missing.
 
 No environment variables are needed: the Supabase URL and publishable key are public values with defaults in `lib/supabase.ts`. Security comes from the database rules, not from hiding the key.
 

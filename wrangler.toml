@@ -1,9 +1,18 @@
-# Cloudflare Workers static assets: serves the Next.js static export in ./out
+# Cloudflare Worker: serves the Next.js static export in ./out on darvooventures.com
 # Build command: npm run build   Deploy command: npx wrangler deploy
 name = "darvoo-ventures"
+main = "worker/index.js"
 compatibility_date = "2026-10-01"
+workers_dev = true
+
+routes = [
+  { pattern = "darvooventures.com", custom_domain = true },
+  { pattern = "www.darvooventures.com", custom_domain = true },
+]
 
 [assets]
 directory = "./out"
+binding = "ASSETS"
 not_found_handling = "404-page"
 html_handling = "auto-trailing-slash"
+run_worker_first = true
