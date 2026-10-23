@@ -38,8 +38,8 @@ export default function MenuView({
   return (
     <div className="shell shell-wide">
       <header className="topbar">
-        <Link href="/" className="brand">
-          <span className="display brand-word">darvoo</span>
+        <Link href="/" className="brand" aria-label="Darvoo Events and Catering, home">
+          <img src="/logo-green.png" alt="Darvoo Events · Catering" className="brand-logo" width={640} height={162} />
           <span className="brand-sub">{t.tagline}</span>
         </Link>
         <div style={{ display: "flex", gap: 8 }}>

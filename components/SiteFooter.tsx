@@ -7,6 +7,7 @@ export default function SiteFooter() {
   const { t } = useI18n();
   return (
     <footer className="footer">
+      <img src="/logo-green.png" alt="Darvoo Events · Catering" className="footer-logo" width={640} height={162} loading="lazy" />
       <strong>DarVoo Ventures International &amp; Co.</strong>
       <span>Kitchen &amp; pickup: Hauffgasse 6, 1110 Wien</span>
       <span>Head office: Mistelbacherstraße 31, 2193 Wilfersdorf</span>

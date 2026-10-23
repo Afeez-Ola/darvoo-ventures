@@ -5,7 +5,7 @@ import { createContext, useContext, useEffect, useState, ReactNode } from "react
 export type Lang = "en" | "de";
 
 const en = {
-  tagline: "Ventures · Vienna, Austria",
+  tagline: "Vienna · Nigerian kitchen",
   heroEyebrow: "Cooked and uncooked · Delivery in Vienna",
   heroTitle: "Nigerian dishes and food stuffs, delivered to your doorstep.",
   orderUntil: "Same day orders until",
@@ -149,7 +149,7 @@ const en = {
 };
 
 const de: typeof en = {
-  tagline: "Ventures · Wien, Österreich",
+  tagline: "Wien · Nigerianische Küche",
   heroEyebrow: "Gekocht und ungekocht · Lieferung in Wien",
   heroTitle: "Nigerianische Gerichte und Lebensmittel, direkt an deine Tür.",
   orderUntil: "Bestellungen für heute bis",

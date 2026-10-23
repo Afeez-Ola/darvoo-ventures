@@ -98,7 +98,7 @@ export default function TrackOrder({ token }: { token: string }) {
       {order.status === "pending_payment" && order.bank && (
         <section className="bank-box" aria-label={t.bankTitle}>
           <h2>{t.bankTitle}</h2>
-          <p>{fill(t.bankIntro, { x: euro(order.total_cents), by: `${dayLabel(order.bank.pay_by.slice(0, 10), lang)} ${clock(order.bank.pay_by)}` })}</p>
+          <p>{fill(t.bankIntro, { x: euro(order.total_cents), by: `${dayLabel(new Date(order.bank.pay_by).toLocaleDateString("en-CA", { timeZone: "Europe/Vienna" }), lang)} ${clock(order.bank.pay_by)}` })}</p>
           <dl>
             {([
               [t.bankHolder, order.bank.holder],
