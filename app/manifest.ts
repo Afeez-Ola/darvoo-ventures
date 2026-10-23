@@ -1,0 +1,29 @@
+import type { MetadataRoute } from "next";
+
+export const dynamic = "force-static";
+
+export default function manifest(): MetadataRoute.Manifest {
+  return {
+    id: "/",
+    name: "Darvoo Ventures",
+    short_name: "Darvoo",
+    description: "Order Nigerian dishes, food stuffs and party trays in Vienna. Delivery, pickup and shipping across Austria.",
+    start_url: "/",
+    scope: "/",
+    display: "standalone",
+    orientation: "portrait",
+    background_color: "#ffffff",
+    theme_color: "#0B6B34",
+    lang: "en",
+    categories: ["food", "shopping"],
+    icons: [
+      { src: "/icons/icon-192.png", sizes: "192x192", type: "image/png", purpose: "any" },
+      { src: "/icons/icon-512.png", sizes: "512x512", type: "image/png", purpose: "any" },
+      { src: "/icons/maskable-512.png", sizes: "512x512", type: "image/png", purpose: "maskable" },
+    ],
+    shortcuts: [
+      { name: "Track my order", short_name: "Track", url: "/track/" },
+      { name: "Basket", url: "/basket/" },
+    ],
+  };
+}

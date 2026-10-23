@@ -36,7 +36,7 @@ export default function MenuView({
   const paused = settings ? !settings.accepting_orders : false;
 
   return (
-    <div className="shell">
+    <div className="shell shell-wide">
       <header className="topbar">
         <Link href="/" className="brand">
           <span className="display brand-word">darvoo</span>
