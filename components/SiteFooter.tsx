@@ -16,9 +16,11 @@ export default function SiteFooter() {
       <span>
         <a href="mailto:teejeomo@gmail.com">teejeomo@gmail.com</a> · <a href="mailto:tjdammy@yahoo.com">tjdammy@yahoo.com</a>
       </span>
-      <span>
+      <nav className="footer-social" aria-label="Social media">
+        <a href="https://www.facebook.com/people/DarVoo-ventures-Foods-Events-planner" target="_blank" rel="noopener">Facebook</a>
         <a href="https://www.instagram.com/victoriastephen1622/" target="_blank" rel="noopener">Instagram</a>
-      </span>
+        <a href="https://www.tiktok.com/@oluwatosinvictori3" target="_blank" rel="noopener">TikTok</a>
+      </nav>
       <nav className="footer-links" aria-label="Legal">
         <Link href="/impressum/">{t.impressum}</Link>
         <Link href="/agb/">{t.agb}</Link>
