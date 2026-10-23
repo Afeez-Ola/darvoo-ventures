@@ -1,7 +1,7 @@
 import type { Mode, Settings } from "./types";
 
 export const SETTINGS_COLS =
-  "accepting_orders,delivery_fee_cents,delivery_fee_far_cents,far_postcodes,booking_days,same_day_cutoff,shipping_fee_cents,free_shipping_from_cents,ship_dispatch_days,delivery_postcode_prefixes,shipping_fee_eu_cents,ship_countries";
+  "accepting_orders,delivery_fee_cents,delivery_fee_far_cents,far_postcodes,booking_days,same_day_cutoff,shipping_fee_cents,free_shipping_from_cents,ship_dispatch_days,delivery_postcode_prefixes,shipping_fee_eu_cents,ship_countries,payment_mode,transfer_hours";
 
 /** Mirrors the fee rules in place_order(); the database is the source of truth. */
 export function feeFor(mode: Mode, s: Settings | null, subtotal: number, postcode = "", country = "AT") {

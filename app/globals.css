@@ -245,3 +245,16 @@ img { display: block; max-width: 100%; }
 @media (min-width: 1280px) {
   .shell-wide .grid { grid-template-columns: repeat(5, minmax(0, 1fr)); }
 }
+
+/* bank transfer details on the tracking page */
+.bank-box { margin: 18px 20px 0; padding: 18px; border-radius: 18px; background: var(--gold-tint); border: 1.5px solid var(--gold); display: flex; flex-direction: column; gap: 10px; }
+.bank-box h2 { margin: 0; font-size: 17px; }
+.bank-box p { margin: 0; font-size: 14px; line-height: 20px; color: var(--ink-2); }
+.bank-box p.small { font-size: 12.5px; line-height: 18px; color: var(--muted); }
+.bank-box dl { margin: 0; display: flex; flex-direction: column; background: #fff; border-radius: 14px; padding: 4px 14px; }
+.bank-box dl > div { padding: 10px 0; border-bottom: 1px solid var(--line); }
+.bank-box dl > div:last-child { border-bottom: 0; }
+.bank-box dt { font-size: 12px; color: var(--muted); font-weight: 700; }
+.bank-box dd { margin: 2px 0 0; display: flex; justify-content: space-between; align-items: center; gap: 10px; font-size: 15px; font-weight: 700; word-break: break-word; }
+.copy-btn { flex: none; height: 32px; padding: 0 12px; border-radius: 16px; border: 1px solid var(--green); background: #fff; color: var(--green); font-size: 12.5px; font-weight: 700; }
+.copy-btn:active { background: var(--green); color: #fff; }

@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { errorText, useI18n } from "@/lib/i18n";
+import { errorText, useI18n, fill } from "@/lib/i18n";
 import { useCart } from "@/lib/cart";
 import { supabaseBrowser } from "@/lib/supabase";
 import { dayLabel, euro, hhmm } from "@/lib/format";
@@ -13,7 +13,7 @@ import type { Settings } from "@/lib/types";
 import PageBar from "@/components/PageBar";
 import { Lock, Truck, Pin } from "@/components/Icons";
 
-type Method = "card" | "eps" | "klarna";
+type Method = "card" | "eps" | "klarna" | "bank_transfer";
 
 export default function CheckoutPage() {
   const { t, lang } = useI18n();
@@ -22,6 +22,8 @@ export default function CheckoutPage() {
   const f = cart.fulfilment;
   const [fee, setFee] = useState(0);
   const [method, setMethod] = useState<Method>("card");
+  const [bankOnly, setBankOnly] = useState(false);
+  const [hours, setHours] = useState(24);
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
   const [email, setEmail] = useState("");
@@ -40,7 +42,11 @@ export default function CheckoutPage() {
       if (saved.email) setEmail(saved.email);
     } catch {}
     supabaseBrowser().from("settings").select(SETTINGS_COLS).single()
-      .then(({ data }) => setFee(feeFor(f.mode, data as Settings, cart.subtotal, f.postcode, f.country)));
+      .then(({ data }) => {
+        const st = data as Settings;
+        setFee(feeFor(f.mode, st, cart.subtotal, f.postcode, f.country));
+        if (st?.payment_mode !== "online") { setBankOnly(true); setHours(st?.transfer_hours ?? 24); setMethod("bank_transfer"); }
+      });
   }, [f.mode, cart.subtotal, f.postcode, f.country]);
 
   useEffect(() => {
@@ -81,8 +87,9 @@ export default function CheckoutPage() {
       setBusy(false);
       return;
     }
-    // DEMO: replace with a Stripe Checkout session + webhook (see README)
-    const { error: payErr } = await sb.rpc("mock_pay", { p_token: placed.public_token });
+    // Bank transfer: the order waits for the money; the kitchen marks it paid.
+    // Online (DEMO): replace with a Stripe Checkout session + webhook (see README)
+    const { error: payErr } = bankOnly ? { error: null } : await sb.rpc("mock_pay", { p_token: placed.public_token });
     if (payErr) {
       setError(errorText(t, payErr.message));
       setBusy(false);
@@ -97,11 +104,13 @@ export default function CheckoutPage() {
     cart.clear();
   }
 
-  const methods: { id: Method; name: string; sub: string }[] = [
-    { id: "card", name: t.card, sub: t.cardSub },
-    { id: "eps", name: t.eps, sub: t.epsSub },
-    { id: "klarna", name: t.klarna, sub: t.klarnaSub },
-  ];
+  const methods: { id: Method; name: string; sub: string }[] = bankOnly
+    ? [{ id: "bank_transfer", name: t.bankTransfer, sub: fill(t.bankTransferSub, { h: hours }) }]
+    : [
+        { id: "card", name: t.card, sub: t.cardSub },
+        { id: "eps", name: t.eps, sub: t.epsSub },
+        { id: "klarna", name: t.klarna, sub: t.klarnaSub },
+      ];
 
   return (
     <div className="shell" style={{ paddingBottom: 180 }}>
@@ -153,7 +162,7 @@ export default function CheckoutPage() {
           </button>
         ))}
         <p className="hint" style={{ display: "flex", gap: 6, alignItems: "center" }}>
-          <Lock /> {t.demoPay}
+          <Lock /> {bankOnly ? fill(t.bankTransferHint, { h: hours }) : t.demoPay}
         </p>
         <label className="check">
           <input type="checkbox" checked={terms} onChange={(e) => setTerms(e.target.checked)} />
@@ -167,7 +176,7 @@ export default function CheckoutPage() {
         <div className="bottombar-inner">
           <div className="sumrow total"><span>{t.totalVat}</span><span>{euro(total)}</span></div>
           <button className="primary" disabled={!canPay} onClick={pay}>
-            {busy ? t.placing : `${t.pay} ${euro(total)}`}
+            {busy ? t.placing : bankOnly ? `${t.placeOrder} · ${euro(total)}` : `${t.pay} ${euro(total)}`}
           </button>
         </div>
       </div>

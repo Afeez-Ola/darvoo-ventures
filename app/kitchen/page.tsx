@@ -33,6 +33,7 @@ interface KOrder {
 }
 
 const COLUMNS: { status: OrderStatus; title: string; tone: string }[] = [
+  { status: "pending_payment", title: "Awaiting bank transfer", tone: "grey" },
   { status: "received", title: "New orders", tone: "gold" },
   { status: "cooking", title: "Cooking / packing", tone: "orange" },
   { status: "ready", title: "Ready", tone: "green" },
@@ -43,6 +44,7 @@ const COLUMNS: { status: OrderStatus; title: string; tone: string }[] = [
 const PARCELS = "parcels";
 
 function nextStep(o: KOrder): { to: OrderStatus; label: string } | null {
+  if (o.status === "pending_payment") return { to: "received", label: "Money arrived: mark paid" };
   if (o.mode === "shipping") {
     switch (o.status) {
       case "received": return { to: "cooking", label: "Accept and start packing" };
@@ -71,6 +73,7 @@ function waNumber(phone: string) {
 }
 
 const WA_TEXT: Partial<Record<OrderStatus, string>> = {
+  pending_payment: "danke für deine Bestellung! Bitte überweise den Betrag innerhalb von 24 Stunden, die Bankdaten und den Verwendungszweck findest du unter diesem Link",
   received: "wir haben deine Bestellung erhalten",
   cooking: "deine Bestellung wird gerade gekocht",
   ready: "deine Bestellung ist fertig",
@@ -80,6 +83,7 @@ const WA_TEXT: Partial<Record<OrderStatus, string>> = {
 };
 
 const WA_SHIP: Partial<Record<OrderStatus, string>> = {
+  pending_payment: "danke für deine Bestellung! Bitte überweise den Betrag innerhalb von 24 Stunden, die Bankdaten und den Verwendungszweck findest du unter diesem Link",
   received: "wir haben deine Bestellung erhalten und verschicken sie bald",
   cooking: "dein Paket wird gerade verpackt",
   ready: "dein Paket wird gerade verpackt",
@@ -176,7 +180,7 @@ function Orders({ header }: { header: React.ReactNode }) {
     const { data } = await sb
       .from("orders")
       .select("id,number,status,mode,slot_date,slot_time,city,country,tracking_code,customer_name,phone,street,postcode,door,note,total_cents,paid_at,created_at,public_token,whatsapp_updates,order_items(name,qty,option)")
-      .neq("status", "pending_payment")
+      .or("status.neq.pending_payment,payment_method.eq.bank_transfer")
       .or(`slot_date.gte.${viennaToday(-1)},and(mode.eq.shipping,created_at.gte.${since})`)
       .order("created_at")
       .limit(400);
@@ -201,7 +205,8 @@ function Orders({ header }: { header: React.ReactNode }) {
 
   const advance = async (o: KOrder, to: OrderStatus) => {
     setBusyId(o.id);
-    const patch: { status: OrderStatus; tracking_code?: string | null } = { status: to };
+    const patch: { status: OrderStatus; tracking_code?: string | null; paid_at?: string } = { status: to };
+    if (o.status === "pending_payment" && to === "received") patch.paid_at = new Date().toISOString();
     if (o.mode === "shipping" && to === "out_for_delivery") patch.tracking_code = (codes[o.id] ?? "").trim().toUpperCase() || null;
     setOrders((prev) => prev.map((x) => (x.id === o.id ? { ...x, ...patch } : x)));
     const { error } = await sb.from("orders").update(patch).eq("id", o.id);
@@ -310,7 +315,12 @@ function Orders({ header }: { header: React.ReactNode }) {
                       {step && (
                         <button className="k-btn" disabled={busyId === o.id} onClick={() => advance(o, step.to)}>{step.label}</button>
                       )}
-                      {o.status === "received" && (
+                      {o.status === "pending_payment" && (
+                        <span className={`k-pill ${Date.now() - Date.parse(o.created_at) > 24 * 3600e3 ? "red" : "gold"}`}>
+                          {Date.now() - Date.parse(o.created_at) > 24 * 3600e3 ? "Transfer overdue" : `Pay by ${clock(new Date(Date.parse(o.created_at) + 24 * 3600e3).toISOString())}`} · ref Darvoo {o.number}
+                        </span>
+                      )}
+                      {(o.status === "received" || o.status === "pending_payment") && (
                         <button className="k-btn ghost" disabled={busyId === o.id}
                           onClick={() => confirm(`Cancel order #${o.number}? Remember to refund the customer.`) && advance(o, "cancelled")}>
                           Cancel order

@@ -159,6 +159,12 @@ export function SettingsEditor() {
   const [freeShip, setFreeShip] = useState("");
   const [dispatch, setDispatch] = useState("2");
   const [euFee, setEuFee] = useState("");
+  const [payMode, setPayMode] = useState("bank_transfer");
+  const [holder, setHolder] = useState("");
+  const [iban, setIban] = useState("");
+  const [bic, setBic] = useState("");
+  const [bankName, setBankName] = useState("");
+  const [hours, setHours] = useState("24");
   const [countries, setCountries] = useState("");
   const [prefixes, setPrefixes] = useState("1");
   const [farFee, setFarFee] = useState("");
@@ -182,6 +188,12 @@ export function SettingsEditor() {
       setFreeShip(s.data.free_shipping_from_cents == null ? "" : toEuroInput(s.data.free_shipping_from_cents));
       setDispatch(String(s.data.ship_dispatch_days));
       setEuFee(toEuroInput(s.data.shipping_fee_eu_cents));
+      setPayMode(s.data.payment_mode);
+      setHolder(s.data.bank_holder);
+      setIban(s.data.bank_iban);
+      setBic(s.data.bank_bic);
+      setBankName(s.data.bank_name);
+      setHours(String(s.data.transfer_hours));
       setCountries((s.data.ship_countries ?? []).join(", "));
       setPrefixes((s.data.delivery_postcode_prefixes ?? []).join(", "));
       setFarFee(toEuroInput(s.data.delivery_fee_far_cents));
@@ -205,12 +217,15 @@ export function SettingsEditor() {
     const ff = toCents(farFee);
     const far = farPcs.split(",").map((x) => x.trim()).filter(Boolean);
     const eu = toCents(euFee);
+    const hh = parseInt(hours, 10);
+    const ibanOk = /^[A-Z]{2}\d{2}[A-Z0-9 ]{10,32}$/.test(iban.trim().toUpperCase());
     const ccs = countries.split(",").map((x) => x.trim().toUpperCase()).filter(Boolean);
     if (
       !Number.isFinite(c) || c < 0 || !/^\d{2}:\d{2}$/.test(cutoff) || !(d >= 0 && d <= 60) ||
       !Number.isFinite(sf) || sf < 0 || (fs !== null && (!Number.isFinite(fs) || fs < 0)) || !(dd >= 0 && dd <= 30) ||
       !pre.length || pre.some((x) => !/^\d{1,4}$/.test(x)) ||
       !Number.isFinite(ff) || ff < 0 || far.some((x) => !/^\d{4}$/.test(x)) ||
+      !(hh >= 1 && hh <= 168) || !ibanOk || !holder.trim() ||
       !Number.isFinite(eu) || eu < 0 || !ccs.includes("AT") || ccs.some((x) => !/^[A-Z]{2}$/.test(x))
     ) {
       setMsg("Check the values: fees are numbers, cut-off like 15:00, booking days 0 to 60, dispatch days 0 to 30, postcodes like 1 or 2193, countries as two-letter codes like AT, DE including AT.");
@@ -222,6 +237,8 @@ export function SettingsEditor() {
       shipping_fee_cents: sf, free_shipping_from_cents: fs, ship_dispatch_days: dd, delivery_postcode_prefixes: pre,
       delivery_fee_far_cents: ff, far_postcodes: far,
       shipping_fee_eu_cents: eu, ship_countries: ccs,
+      payment_mode: payMode, bank_holder: holder.trim(), bank_iban: iban.trim().toUpperCase(), bank_bic: bic.trim().toUpperCase(),
+      bank_name: bankName.trim(), transfer_hours: hh,
       updated_at: new Date().toISOString(),
     }).eq("id", 1);
     setMsg(error ? "Could not save: " + error.message : "Settings saved.");
@@ -272,6 +289,20 @@ export function SettingsEditor() {
           <input value={countries} onChange={(e) => setCountries(e.target.value)} placeholder="AT, DE, NL" />
           <span className="k-muted small" style={{ fontWeight: 400 }}>Default: all 27 EU countries. Outside the EU (UK, Switzerland, Norway) fish and meat products need customs checks, so add those only after asking the post office.</span>
         </label>
+        <h2 style={{ marginTop: 8 }}>Payment</h2>
+        <label className="field">How customers pay
+          <select value={payMode} onChange={(e) => setPayMode(e.target.value)} style={{ height: 44, borderRadius: 10, border: "1px solid var(--field)", padding: "0 10px" }}>
+            <option value="bank_transfer">Bank transfer only (until Stripe is verified)</option>
+            <option value="online">Online payment (Stripe live)</option>
+          </select>
+        </label>
+        <div className="k-form-row">
+          <label className="field">Account holder<input value={holder} onChange={(e) => setHolder(e.target.value)} /></label>
+          <label className="field">IBAN<input value={iban} onChange={(e) => setIban(e.target.value)} /></label>
+          <label className="field">BIC<input value={bic} onChange={(e) => setBic(e.target.value)} /></label>
+          <label className="field">Bank<input value={bankName} onChange={(e) => setBankName(e.target.value)} /></label>
+          <label className="field">Customer must pay within (hours)<input type="number" min={1} max={168} value={hours} onChange={(e) => setHours(e.target.value)} /></label>
+        </div>
         <button className="k-btn" style={{ width: "auto", padding: "0 22px" }} disabled={busy} onClick={saveSettings}>Save settings</button>
       </section>
 

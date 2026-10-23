@@ -88,12 +88,37 @@ export default function TrackOrder({ token }: { token: string }) {
 
       <section className="track-hero" aria-live="polite">
         <span className="eyebrow">
-          {cancelled ? t.st_cancelled : `${t.step} ${current + 1} ${t.of} ${steps.length} · ${label(t, order.status, order.mode)}`}
+          {order.status === "pending_payment" ? t.st_pending_payment : cancelled ? t.st_cancelled : `${t.step} ${current + 1} ${t.of} ${steps.length} · ${label(t, order.status, order.mode)}`}
         </span>
         <h1 className="display">{headline}</h1>
         <p>{intro}</p>
         <div className="progress" aria-hidden="true"><div style={{ width: cancelled ? "0%" : progress + "%" }} /></div>
       </section>
+
+      {order.status === "pending_payment" && order.bank && (
+        <section className="bank-box" aria-label={t.bankTitle}>
+          <h2>{t.bankTitle}</h2>
+          <p>{fill(t.bankIntro, { x: euro(order.total_cents), by: `${dayLabel(order.bank.pay_by.slice(0, 10), lang)} ${clock(order.bank.pay_by)}` })}</p>
+          <dl>
+            {([
+              [t.bankHolder, order.bank.holder],
+              ["IBAN", order.bank.iban],
+              ["BIC", `${order.bank.bic} (${order.bank.bank})`],
+              [t.bankAmount, euro(order.total_cents)],
+              [t.bankReference, order.bank.reference],
+            ] as [string, string][]).map(([k, v]) => (
+              <div key={k}>
+                <dt>{k}</dt>
+                <dd>
+                  <span>{v}</span>
+                  <button type="button" className="copy-btn" onClick={() => navigator.clipboard?.writeText(k === "IBAN" ? v.replace(/\s/g, "") : k === t.bankAmount ? (order.total_cents / 100).toFixed(2) : v.split(" (")[0])}>{t.copy}</button>
+                </dd>
+              </div>
+            ))}
+          </dl>
+          <p className="small">{t.bankAfter}</p>
+        </section>
+      )}
 
       {!cancelled && (
         <ol className="timeline" aria-label="Order status">

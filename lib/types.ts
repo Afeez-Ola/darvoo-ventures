@@ -33,6 +33,8 @@ export interface Settings {
   free_shipping_from_cents: number | null;
   shipping_fee_eu_cents: number;
   ship_countries: string[];
+  payment_mode?: "bank_transfer" | "online";
+  transfer_hours?: number;
   ship_dispatch_days: number;
   delivery_postcode_prefixes: string[];
   delivery_fee_far_cents: number;
@@ -60,6 +62,7 @@ export interface TrackedOrder {
   customer_name: string;
   payment_method: string;
   paid: boolean;
+  bank?: { holder: string; iban: string; bic: string; bank: string; reference: string; pay_by: string } | null;
   subtotal_cents: number;
   fee_cents: number;
   total_cents: number;
