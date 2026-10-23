@@ -7,7 +7,7 @@ const { TwaManifest, TwaGenerator, ConsoleLog } = require('@bubblewrap/core');
   m.launcherName = 'Darvoo';
   m.host = 'darvooventures.com';
   m.startUrl = '/';
-  m.themeColor = m.themeColor; m.navigationColor = m.themeColor;
+  m.navigationColor = m.themeColor; m.backgroundColor = m.themeColor; m.navigationColorDark = m.themeColor; m.themeColorDark = m.themeColor; m.navigationDividerColor = m.themeColor; m.navigationDividerColorDark = m.themeColor;
   m.appVersionName = '1.0.0'; m.appVersionCode = 1;
   m.signingKey = { path: './darvoo-upload.keystore', alias: 'darvoo-upload' };
   m.fallbackType = 'customtabs';
