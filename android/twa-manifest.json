@@ -17,7 +17,7 @@
   "maskableIconUrl": "https://darvooventures.com/icons/maskable-512.png",
   "splashScreenFadeOutDuration": 300,
   "signingKey": {
-    "path": "/home/claude/darvoo-twa/darvoo-upload.keystore",
+    "path": "./darvoo-upload.keystore",
     "alias": "darvoo-upload"
   },
   "appVersionName": "1.0.0",
