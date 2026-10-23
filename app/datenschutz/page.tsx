@@ -6,7 +6,7 @@ export default function Datenschutz() {
       <p><Todo>Entwurf. Vor dem Start prüfen lassen.</Todo></p>
 
       <h2>Verantwortlich</h2>
-      <p>DarVoo Ventures International &amp; Co., Inhaberin Victoria Oluwatosin Stephen, Mistelbacherstraße 31, 2193 Wilfersdorf, Österreich. E-Mail: <a href="mailto:tjdammy@yahoo.com">tjdammy@yahoo.com</a>, Telefon: +43 676 4022539.</p>
+      <p>DarVoo Ventures International &amp; Co., Inhaberin Victoria Oluwatosin Stephen, Mistelbacherstraße 31, 2193 Wilfersdorf, Österreich (Zweigstelle: Hauffgasse 6, 1110 Wien). E-Mail: <a href="mailto:teejeomo@gmail.com">teejeomo@gmail.com</a> oder <a href="mailto:tjdammy@yahoo.com">tjdammy@yahoo.com</a>, Telefon: +43 676 7835226 oder +43 676 4022539.</p>
 
       <h2>Welche Daten wir verarbeiten</h2>
       <p>Wenn du bestellst: Name, Handynummer, E-Mail (optional), Lieferadresse, Bestellinhalt, Zeitfenster, Notiz an die Küche und Zahlungsstatus. Kartendaten sehen wir nie; diese verarbeitet der Zahlungsanbieter.</p>

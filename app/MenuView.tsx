@@ -149,9 +149,9 @@ export default function MenuView({
       <div className="summary" style={{ marginTop: 28, justifyContent: "space-between" }}>
         <div style={{ display: "flex", flexDirection: "column", gap: 2 }}>
           <strong style={{ fontSize: 14 }}>{t.planningEvent}</strong>
-          <span style={{ fontSize: 13, color: "var(--muted)" }}>+43 676 4022539</span>
+          <span style={{ fontSize: 13, color: "var(--muted)" }}>+43 676 7835226 · +43 676 4022539</span>
         </div>
-        <a href="tel:+436764022539" className="outline" style={{ height: 44, padding: "0 18px", fontSize: 14 }}>
+        <a href="tel:+436767835226" className="outline" style={{ height: 44, padding: "0 18px", fontSize: 14 }}>
           {t.callUs}
         </a>
       </div>

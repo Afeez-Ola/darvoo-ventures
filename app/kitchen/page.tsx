@@ -95,7 +95,7 @@ function waLink(o: KOrder) {
     const text = `Hallo ${first}, ${WA_SHIP[o.status] ?? "hier ein Update zu deiner Bestellung"}${code} (Bestellung #${o.number}). Status live verfolgen: ${link}\n\nDarVoo Ventures`;
     return `https://wa.me/${waNumber(o.phone)}?text=${encodeURIComponent(text)}`;
   }
-  const pickupReady = o.status === "ready" && o.mode === "pickup" ? " und kann in der Mistelbacherstraße 31 abgeholt werden" : "";
+  const pickupReady = o.status === "ready" && o.mode === "pickup" ? " und kann in der Hauffgasse 6, 1110 Wien abgeholt werden" : "";
   const link = `${window.location.origin}/track/?t=${o.public_token}`;
   const text = `Hallo ${first}, ${WA_TEXT[o.status] ?? "hier ein Update zu deiner Bestellung"}${pickupReady} (Bestellung #${o.number}). Status live verfolgen: ${link}\n\nDarVoo Ventures`;
   return `https://wa.me/${waNumber(o.phone)}?text=${encodeURIComponent(text)}`;

@@ -31,7 +31,7 @@ export default function Allergene() {
           ))}
         </tbody>
       </table>
-      <p style={{ marginTop: 16 }}>Fragen zu Allergenen? Ruf uns an: <a href="tel:+436764022539">+43 676 4022539</a></p>
+      <p style={{ marginTop: 16 }}>Fragen zu Allergenen? Ruf uns an: <a href="tel:+436767835226">+43 676 7835226</a></p>
     </LegalPage>
   );
 }

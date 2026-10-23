@@ -8,9 +8,13 @@ export default function SiteFooter() {
   return (
     <footer className="footer">
       <strong>DarVoo Ventures International &amp; Co.</strong>
-      <span>Mistelbacherstraße 31, Wilfersdorf, Austria</span>
+      <span>Kitchen &amp; pickup: Hauffgasse 6, 1110 Wien</span>
+      <span>Head office: Mistelbacherstraße 31, 2193 Wilfersdorf</span>
       <span>
-        <a href="tel:+436764022539">+43 676 4022539</a> · <a href="mailto:tjdammy@yahoo.com">tjdammy@yahoo.com</a>
+        <a href="tel:+436767835226">+43 676 7835226</a> · <a href="tel:+436764022539">+43 676 4022539</a>
+      </span>
+      <span>
+        <a href="mailto:teejeomo@gmail.com">teejeomo@gmail.com</a> · <a href="mailto:tjdammy@yahoo.com">tjdammy@yahoo.com</a>
       </span>
       <span>
         <a href="https://www.instagram.com/victoriastephen1622/" target="_blank" rel="noopener">Instagram</a>

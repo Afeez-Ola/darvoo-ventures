@@ -5,7 +5,7 @@ import { createContext, useContext, useEffect, useState, ReactNode } from "react
 export type Lang = "en" | "de";
 
 const en = {
-  tagline: "Ventures · Wilfersdorf, Austria",
+  tagline: "Ventures · Vienna, Austria",
   heroEyebrow: "Cooked and uncooked · Delivery in Vienna",
   heroTitle: "Nigerian dishes and food stuffs, delivered to your doorstep.",
   orderUntil: "Same day orders until",
@@ -41,7 +41,7 @@ const en = {
   postcode: "Postcode",
   door: "Stiege / Tür",
   pickupTitle: "Pick up from Darvoo kitchen",
-  pickupAddress: "Mistelbacherstraße 31, 2193 Wilfersdorf. We text you when it is ready.",
+  pickupAddress: "Hauffgasse 6, 1110 Wien (Simmering). We text you when it is ready.",
   kitchenNote: "Note for the kitchen (optional)",
   subtotal: "Subtotal",
   deliveryFee: "Delivery fee",
@@ -108,7 +108,7 @@ const en = {
   shipOnlyGroceries: "Only food stuffs can be posted. Cooked dishes and party trays need delivery in Vienna or pickup.",
   shipAddress: "Shipping address",
   city: "City",
-  shipNote: "Packed in Wilfersdorf and sent within {n} working days, anywhere in Austria.",
+  shipNote: "Packed in our Vienna kitchen and sent within {n} working days, anywhere in Austria.",
   freeShipFrom: "Free shipping from {x}",
   shippingFee: "Shipping",
   shipHeadlineWaiting: "Sent within {n} working days",
@@ -125,11 +125,11 @@ const en = {
   err_NOT_SHIPPABLE: "Only food stuffs can be shipped. Remove cooked dishes or choose delivery or pickup.",
   err_CHOOSE_OPTION: "A dish in your basket needs a choice. Please remove it and add it again.",
   choose: "Choose",
-  deliveryZones: "Delivery {near} within about 10 km of the city centre, {far} to {list}.",
+  deliveryZones: "Delivery {near} within about 10 km of our kitchen in 1110 Simmering, {far} to {list}.",
 };
 
 const de: typeof en = {
-  tagline: "Ventures · Wilfersdorf, Österreich",
+  tagline: "Ventures · Wien, Österreich",
   heroEyebrow: "Gekocht und ungekocht · Lieferung in Wien",
   heroTitle: "Nigerianische Gerichte und Lebensmittel, direkt an deine Tür.",
   orderUntil: "Bestellungen für heute bis",
@@ -165,7 +165,7 @@ const de: typeof en = {
   postcode: "PLZ",
   door: "Stiege / Tür",
   pickupTitle: "Abholung in der Darvoo Küche",
-  pickupAddress: "Mistelbacherstraße 31, 2193 Wilfersdorf. Wir schreiben dir, sobald es fertig ist.",
+  pickupAddress: "Hauffgasse 6, 1110 Wien (Simmering). Wir schreiben dir, sobald es fertig ist.",
   kitchenNote: "Notiz für die Küche (optional)",
   subtotal: "Zwischensumme",
   deliveryFee: "Liefergebühr",
@@ -232,7 +232,7 @@ const de: typeof en = {
   shipOnlyGroceries: "Nur Lebensmittel können verschickt werden. Gekochte Speisen und Party-Platten gibt es per Lieferung in Wien oder zur Abholung.",
   shipAddress: "Versandadresse",
   city: "Ort",
-  shipNote: "In Wilfersdorf verpackt und innerhalb von {n} Werktagen in ganz Österreich verschickt.",
+  shipNote: "In unserer Wiener Küche verpackt und innerhalb von {n} Werktagen in ganz Österreich verschickt.",
   freeShipFrom: "Gratis Versand ab {x}",
   shippingFee: "Versand",
   shipHeadlineWaiting: "Versand innerhalb von {n} Werktagen",
@@ -249,7 +249,7 @@ const de: typeof en = {
   err_NOT_SHIPPABLE: "Nur Lebensmittel können verschickt werden. Bitte gekochte Speisen entfernen oder Lieferung bzw. Abholung wählen.",
   err_CHOOSE_OPTION: "Bei einem Gericht fehlt die Auswahl. Bitte entfernen und neu hinzufügen.",
   choose: "Auswahl",
-  deliveryZones: "Lieferung {near} im Umkreis von ca. 10 km um das Zentrum, {far} nach {list}.",
+  deliveryZones: "Lieferung {near} im Umkreis von ca. 10 km um unsere Küche in 1110 Simmering, {far} nach {list}.",
 };
 
 export type Dict = typeof en;

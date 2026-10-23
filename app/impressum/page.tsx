@@ -9,14 +9,14 @@ export default function Impressum() {
       <p>
         DarVoo Ventures International &amp; Co.<br />
         Inhaberin: Victoria Oluwatosin Stephen<br />
-        Mistelbacherstraße 31<br />
-        2193 Wilfersdorf, Österreich
+        Sitz: Mistelbacherstraße 31, 2193 Wilfersdorf, Österreich<br />
+        Zweigstelle: Hauffgasse 6, 1110 Wien, Österreich
       </p>
 
       <h2>Kontakt</h2>
       <p>
-        Telefon: <a href="tel:+436764022539">+43 676 4022539</a><br />
-        E-Mail: <a href="mailto:tjdammy@yahoo.com">tjdammy@yahoo.com</a>
+        Telefon: <a href="tel:+436767835226">+43 676 7835226</a>, <a href="tel:+436764022539">+43 676 4022539</a><br />
+        E-Mail: <a href="mailto:teejeomo@gmail.com">teejeomo@gmail.com</a>, <a href="mailto:tjdammy@yahoo.com">tjdammy@yahoo.com</a>
       </p>
 
       <h2>Gewerbe</h2>

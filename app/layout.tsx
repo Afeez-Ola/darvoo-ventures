@@ -9,7 +9,7 @@ const body = DM_Sans({ subsets: ["latin", "latin-ext"], weight: ["400", "500", "
 
 export const metadata: Metadata = {
   title: "Darvoo Ventures · Nigerian food in Austria",
-  description: "Order Nigerian dishes, food stuffs and party trays from Darvoo Ventures, Wilfersdorf. Delivery and pickup.",
+  description: "Order Nigerian dishes, food stuffs and party trays from Darvoo Ventures in Vienna. Delivery in Vienna, pickup, and shipping across Austria.",
 };
 
 export const viewport: Viewport = { themeColor: "#0B6B34", width: "device-width", initialScale: 1 };

@@ -129,7 +129,7 @@ export default function TrackOrder({ token }: { token: string }) {
       )}
 
       <section className="contact" style={{ paddingTop: cancelled ? 22 : 8 }}>
-        <a href="tel:+436764022539" className="outline"><Phone /> {t.callUs}</a>
+        <a href="tel:+436767835226" className="outline"><Phone /> {t.callUs}</a>
         <a href="https://wa.me/436764022539" className="outline" target="_blank" rel="noopener"><Chat /> WhatsApp</a>
       </section>
 
