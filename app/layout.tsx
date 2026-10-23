@@ -9,7 +9,7 @@ const display = Bricolage_Grotesque({ subsets: ["latin"], weight: ["600", "800"]
 const body = DM_Sans({ subsets: ["latin", "latin-ext"], weight: ["400", "500", "700"], variable: "--font-body" });
 
 const DESCRIPTION =
-  "Order Nigerian dishes, food stuffs and party trays from Darvoo Ventures in Vienna. Delivery in Vienna, pickup, and shipping across Austria.";
+  "Order Nigerian dishes, food stuffs and party trays from Darvoo Ventures in Vienna. Delivery in Vienna, pickup, and shipping across Europe.";
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://darvooventures.com"),

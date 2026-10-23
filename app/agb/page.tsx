@@ -16,7 +16,7 @@ export default function Agb() {
 
       <h2>4. Lieferung, Versand und Abholung</h2>
       <p><strong>Lieferung in Wien:</strong> Gekochte Speisen und Party-Platten liefern wir frisch zum gewählten Zeitfenster an Adressen in Wien. Die Liefergebühr richtet sich nach der Entfernung von unserer Küche in 1110 Wien (bis ca. 10 km bzw. darüber) und wird im Warenkorb angezeigt.</p>
-      <p><strong>Versand in ganz Österreich:</strong> Ungekochte Lebensmittel (z. B. Gari, Egusi, Palmöl) versenden wir als Paket an Adressen in Österreich. Gekochte Speisen werden nicht verschickt. Die Versandkosten und die Versanddauer werden im Warenkorb angezeigt. Sobald das Paket unterwegs ist, erhältst du die Sendungsnummer auf deiner Tracking-Seite.</p>
+      <p><strong>Versand in die EU:</strong> Ungekochte Lebensmittel (z. B. Gari, Egusi, Palmöl) versenden wir als Paket an Adressen in Österreich und in den Ländern der Europäischen Union. Gekochte Speisen werden nicht verschickt. Die Versandkosten und die Versanddauer werden im Warenkorb angezeigt. Sobald das Paket unterwegs ist, erhältst du die Sendungsnummer auf deiner Tracking-Seite.</p>
       <p><strong>Abholung:</strong> zum gewählten Zeitfenster in der Hauffgasse 6, 1110 Wien.</p>
 
       <h2>5. Event-Catering und Party-Platten</h2>

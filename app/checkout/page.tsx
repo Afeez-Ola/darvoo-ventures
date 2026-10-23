@@ -8,7 +8,7 @@ import { useCart } from "@/lib/cart";
 import { supabaseBrowser } from "@/lib/supabase";
 import { dayLabel, euro, hhmm } from "@/lib/format";
 import { rememberOrder } from "@/lib/orders";
-import { feeFor, SETTINGS_COLS } from "@/lib/fees";
+import { feeFor, SETTINGS_COLS, countryName } from "@/lib/fees";
 import type { Settings } from "@/lib/types";
 import PageBar from "@/components/PageBar";
 import { Lock, Truck, Pin } from "@/components/Icons";
@@ -40,8 +40,8 @@ export default function CheckoutPage() {
       if (saved.email) setEmail(saved.email);
     } catch {}
     supabaseBrowser().from("settings").select(SETTINGS_COLS).single()
-      .then(({ data }) => setFee(feeFor(f.mode, data as Settings, cart.subtotal, f.postcode)));
-  }, [f.mode, cart.subtotal, f.postcode]);
+      .then(({ data }) => setFee(feeFor(f.mode, data as Settings, cart.subtotal, f.postcode, f.country)));
+  }, [f.mode, cart.subtotal, f.postcode, f.country]);
 
   useEffect(() => {
     if (placedRef.current) return;
@@ -68,6 +68,7 @@ export default function CheckoutPage() {
         street: f.street,
         postcode: f.postcode,
         city: f.mode === "shipping" ? f.city : "",
+        country: f.mode === "shipping" ? f.country : "AT",
         door: f.door,
         note: f.note,
         payment_method: method,
@@ -117,7 +118,7 @@ export default function CheckoutPage() {
           <span style={{ fontSize: 13, color: "var(--muted)" }}>
             {cart.count} {t.items}
             {f.mode === "delivery" && f.street ? ` · ${f.street}, ${f.postcode}` : ""}
-            {f.mode === "shipping" && f.street ? ` · ${f.street}, ${f.postcode} ${f.city}` : ""}
+            {f.mode === "shipping" && f.street ? ` · ${f.street}, ${f.postcode} ${f.city}, ${countryName(f.country, lang)}` : ""}
           </span>
         </div>
         <Link href="/basket" style={{ fontSize: 14, fontWeight: 700, padding: "12px 4px" }}>{t.edit}</Link>

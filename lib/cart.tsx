@@ -21,6 +21,7 @@ export interface Fulfilment {
   postcode: string;
   door: string;
   city: string;
+  country: string;
   note: string;
 }
 
@@ -32,6 +33,7 @@ const emptyFulfilment: Fulfilment = {
   postcode: "",
   door: "",
   city: "",
+  country: "AT",
   note: "",
 };
 

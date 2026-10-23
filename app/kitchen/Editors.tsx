@@ -158,6 +158,8 @@ export function SettingsEditor() {
   const [shipFee, setShipFee] = useState("");
   const [freeShip, setFreeShip] = useState("");
   const [dispatch, setDispatch] = useState("2");
+  const [euFee, setEuFee] = useState("");
+  const [countries, setCountries] = useState("");
   const [prefixes, setPrefixes] = useState("1");
   const [farFee, setFarFee] = useState("");
   const [farPcs, setFarPcs] = useState("");
@@ -179,6 +181,8 @@ export function SettingsEditor() {
       setShipFee(toEuroInput(s.data.shipping_fee_cents));
       setFreeShip(s.data.free_shipping_from_cents == null ? "" : toEuroInput(s.data.free_shipping_from_cents));
       setDispatch(String(s.data.ship_dispatch_days));
+      setEuFee(toEuroInput(s.data.shipping_fee_eu_cents));
+      setCountries((s.data.ship_countries ?? []).join(", "));
       setPrefixes((s.data.delivery_postcode_prefixes ?? []).join(", "));
       setFarFee(toEuroInput(s.data.delivery_fee_far_cents));
       setFarPcs((s.data.far_postcodes ?? []).join(", "));
@@ -200,13 +204,16 @@ export function SettingsEditor() {
     const pre = prefixes.split(",").map((x) => x.trim()).filter(Boolean);
     const ff = toCents(farFee);
     const far = farPcs.split(",").map((x) => x.trim()).filter(Boolean);
+    const eu = toCents(euFee);
+    const ccs = countries.split(",").map((x) => x.trim().toUpperCase()).filter(Boolean);
     if (
       !Number.isFinite(c) || c < 0 || !/^\d{2}:\d{2}$/.test(cutoff) || !(d >= 0 && d <= 60) ||
       !Number.isFinite(sf) || sf < 0 || (fs !== null && (!Number.isFinite(fs) || fs < 0)) || !(dd >= 0 && dd <= 30) ||
       !pre.length || pre.some((x) => !/^\d{1,4}$/.test(x)) ||
-      !Number.isFinite(ff) || ff < 0 || far.some((x) => !/^\d{4}$/.test(x))
+      !Number.isFinite(ff) || ff < 0 || far.some((x) => !/^\d{4}$/.test(x)) ||
+      !Number.isFinite(eu) || eu < 0 || !ccs.includes("AT") || ccs.some((x) => !/^[A-Z]{2}$/.test(x))
     ) {
-      setMsg("Check the values: fees are numbers, cut-off like 15:00, booking days 0 to 60, dispatch days 0 to 30, postcodes like 1 or 2193.");
+      setMsg("Check the values: fees are numbers, cut-off like 15:00, booking days 0 to 60, dispatch days 0 to 30, postcodes like 1 or 2193, countries as two-letter codes like AT, DE including AT.");
       return;
     }
     setBusy(true);
@@ -214,6 +221,7 @@ export function SettingsEditor() {
       delivery_fee_cents: c, same_day_cutoff: cutoff, booking_days: d,
       shipping_fee_cents: sf, free_shipping_from_cents: fs, ship_dispatch_days: dd, delivery_postcode_prefixes: pre,
       delivery_fee_far_cents: ff, far_postcodes: far,
+      shipping_fee_eu_cents: eu, ship_countries: ccs,
       updated_at: new Date().toISOString(),
     }).eq("id", 1);
     setMsg(error ? "Could not save: " + error.message : "Settings saved.");
@@ -253,12 +261,17 @@ export function SettingsEditor() {
             <span className="k-muted small" style={{ fontWeight: 400 }}>Every other delivery postcode pays the lower fee.</span>
           </label>
         </div>
-        <h2 style={{ marginTop: 8 }}>Shipping food stuffs across Austria</h2>
+        <h2 style={{ marginTop: 8 }}>Shipping food stuffs across Europe</h2>
         <div className="k-form-row">
-          <label className="field">Shipping fee (€)<input inputMode="decimal" value={shipFee} onChange={(e) => setShipFee(e.target.value)} /></label>
-          <label className="field">Free shipping from (€, empty = never)<input inputMode="decimal" value={freeShip} onChange={(e) => setFreeShip(e.target.value)} /></label>
+          <label className="field">Shipping fee Austria (€)<input inputMode="decimal" value={shipFee} onChange={(e) => setShipFee(e.target.value)} /></label>
+          <label className="field">Shipping fee other countries (€)<input inputMode="decimal" value={euFee} onChange={(e) => setEuFee(e.target.value)} /></label>
+          <label className="field">Free shipping in Austria from (€, empty = never)<input inputMode="decimal" value={freeShip} onChange={(e) => setFreeShip(e.target.value)} /></label>
           <label className="field">Posted within (working days)<input type="number" min={0} max={30} value={dispatch} onChange={(e) => setDispatch(e.target.value)} /></label>
         </div>
+        <label className="field">Countries we ship to (two-letter codes)
+          <input value={countries} onChange={(e) => setCountries(e.target.value)} placeholder="AT, DE, NL" />
+          <span className="k-muted small" style={{ fontWeight: 400 }}>Default: all 27 EU countries. Outside the EU (UK, Switzerland, Norway) fish and meat products need customs checks, so add those only after asking the post office.</span>
+        </label>
         <button className="k-btn" style={{ width: "auto", padding: "0 22px" }} disabled={busy} onClick={saveSettings}>Save settings</button>
       </section>
 

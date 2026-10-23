@@ -114,6 +114,7 @@ img { display: block; max-width: 100%; }
 .hint { margin: 0; font-size: 12px; line-height: 17px; color: var(--muted); }
 .field { display: flex; flex-direction: column; gap: 5px; font-size: 13px; font-weight: 700; color: var(--ink-2); min-width: 0; }
 .field input, .field textarea { height: 46px; border-radius: 12px; border: 1px solid var(--field); padding: 0 14px; font-size: 16px; font-weight: 400; color: var(--ink); min-width: 0; background: #fff; }
+.field select { height: 46px; border-radius: 12px; border: 1px solid var(--field); padding: 0 12px; font-size: 16px; font-weight: 400; color: var(--ink); background: #fff; min-width: 0; }
 .field textarea { height: auto; padding: 12px 14px; resize: vertical; }
 .two { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
 .check { display: flex; align-items: center; gap: 10px; min-height: 44px; font-size: 14px; }

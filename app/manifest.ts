@@ -7,7 +7,7 @@ export default function manifest(): MetadataRoute.Manifest {
     id: "/",
     name: "Darvoo Ventures",
     short_name: "Darvoo",
-    description: "Order Nigerian dishes, food stuffs and party trays in Vienna. Delivery, pickup and shipping across Austria.",
+    description: "Order Nigerian dishes, food stuffs and party trays in Vienna. Delivery, pickup and shipping across Europe.",
     start_url: "/",
     scope: "/",
     display: "standalone",

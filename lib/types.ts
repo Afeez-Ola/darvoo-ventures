@@ -31,6 +31,8 @@ export interface Settings {
   same_day_cutoff: string;
   shipping_fee_cents: number;
   free_shipping_from_cents: number | null;
+  shipping_fee_eu_cents: number;
+  ship_countries: string[];
   ship_dispatch_days: number;
   delivery_postcode_prefixes: string[];
   delivery_fee_far_cents: number;

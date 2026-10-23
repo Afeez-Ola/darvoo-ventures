@@ -8,7 +8,7 @@ import { useCart } from "@/lib/cart";
 import { supabaseBrowser } from "@/lib/supabase";
 import { dayLabel, euro, hhmm, viennaToday } from "@/lib/format";
 import type { Category, Settings, Slot } from "@/lib/types";
-import { feeFor, SETTINGS_COLS } from "@/lib/fees";
+import { feeFor, SETTINGS_COLS, postcodeOk, countryName } from "@/lib/fees";
 import PageBar from "@/components/PageBar";
 import { Minus, Pin, Plus } from "@/components/Icons";
 
@@ -72,9 +72,10 @@ export default function BasketPage() {
   }, [f.slot_date]);
 
   const isShip = f.mode === "shipping";
-  const fee = feeFor(f.mode, settings, cart.subtotal, f.postcode);
+  const cc = isShip ? f.country || "AT" : "AT";
+  const fee = feeFor(f.mode, settings, cart.subtotal, f.postcode, cc);
   const pc = f.postcode.trim();
-  const pcValid = /^[1-9][0-9]{3}$/.test(pc);
+  const pcValid = postcodeOk(pc, cc);
   const inVienna = !!settings && settings.delivery_postcode_prefixes.some((p) => pc.startsWith(p));
   const outside = f.mode === "delivery" && pcValid && !inVienna;
   const addressOk =
@@ -134,7 +135,8 @@ export default function BasketPage() {
         {categories && !canShip && <p className="hint">{t.shipOnlyGroceries}</p>}
         {isShip && settings && (
           <div className="notice green" style={{ margin: 0 }}>
-            {fill(t.shipNote, { n: settings.ship_dispatch_days })}
+            {fill(t.shipNote, { n: settings.ship_dispatch_days })}{" "}
+            {fill(t.shipFees, { at: euro(settings.shipping_fee_cents), eu: euro(settings.shipping_fee_eu_cents) })}
             {settings.free_shipping_from_cents != null && <> {fill(t.freeShipFrom, { x: euro(settings.free_shipping_from_cents) })}.</>}
           </div>
         )}
@@ -195,14 +197,24 @@ export default function BasketPage() {
               })}
             </p>
           )}
+          {isShip && settings && (
+            <label className="field">{t.country}
+              <select className="select" value={cc} autoComplete="country"
+                onChange={(e) => cart.setFulfilment({ country: e.target.value, postcode: "" })}>
+                {[...settings.ship_countries]
+                  .sort((a, b) => (a === "AT" ? -1 : b === "AT" ? 1 : countryName(a, lang).localeCompare(countryName(b, lang))))
+                  .map((c) => <option key={c} value={c}>{countryName(c, lang)}</option>)}
+              </select>
+            </label>
+          )}
           <label className="field">{t.street}
             <input value={f.street} autoComplete="street-address" onChange={(e) => cart.setFulfilment({ street: e.target.value })} />
           </label>
           <div className="two">
             <label className="field">{t.postcode}
-              <input value={f.postcode} inputMode="numeric" maxLength={4} autoComplete="postal-code"
+              <input value={f.postcode} inputMode={cc === "AT" ? "numeric" : "text"} maxLength={cc === "AT" ? 4 : 10} autoComplete="postal-code"
                 aria-invalid={outside || (pc.length >= 4 && !pcValid)}
-                onChange={(e) => cart.setFulfilment({ postcode: e.target.value.replace(/\D/g, "") })} />
+                onChange={(e) => cart.setFulfilment({ postcode: cc === "AT" ? e.target.value.replace(/\D/g, "") : e.target.value.toUpperCase() })} />
             </label>
             {isShip ? (
               <label className="field">{t.city}

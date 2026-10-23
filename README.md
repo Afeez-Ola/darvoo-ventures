@@ -9,7 +9,7 @@ Built with Next.js 15 and Supabase (Postgres, Auth, Realtime).
 | Page | What it does |
 |---|---|
 | `/` | Menu with three tabs (Dishes, Food stuffs, Events), photos and a short EN/DE description per item (`products.description`, `description_de`), event services on the Events tab, EN/DE switch |
-| `/basket` | Basket and three ways to get it: **delivery** in Vienna (postcodes starting with 1, editable) or **pickup** at the Vienna kitchen (Hauffgasse 6, 1110), both with a day and time slot that closes when full; or **shipping** across Austria for food stuffs only (no slot, parcel) |
+| `/basket` | Basket and three ways to get it: **delivery** in Vienna (postcodes starting with 1, editable) or **pickup** at the Vienna kitchen (Hauffgasse 6, 1110), both with a day and time slot that closes when full; or **shipping** across the EU for food stuffs only (no slot, parcel; country picker, Austrian and EU fees) |
 | `/checkout` | Contact details, payment method, terms, places the order |
 | `/track/?t=…` | Live order status for the customer (refreshes every 15 s). Parcels show the tracking number with a link to post.at. `/track/` alone lists orders placed on this device |
 | `/kitchen` | Staff only. **Orders**: live board by day plus a **Parcels to post** view, one tap to move an order forward, tracking number when a parcel is posted, WhatsApp update button, pause ordering. **Menu & prices**: edit prices, sizes, allergen codes, hide items. **Slots & settings**: Vienna delivery fees (€5 up to ~10 km from Hauffgasse 6, €10 beyond, by postcode) and delivery postcodes, shipping fee, free shipping threshold, dispatch days, same day cut-off, booking window, time slots and capacity |
@@ -85,4 +85,4 @@ No environment variables are needed: the Supabase URL and publishable key are pu
 
 ## Database
 
-SQL for a fresh project is in `supabase/migrations/`. Apply them in order (`0001` to `0009`); `0004` must run on its own because it adds an enum value.
+SQL for a fresh project is in `supabase/migrations/`. Apply them in order (`0001` to `0010`); `0004` must run on its own because it adds an enum value.

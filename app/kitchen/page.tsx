@@ -16,6 +16,7 @@ interface KOrder {
   slot_date: string | null;
   slot_time: string | null;
   city: string | null;
+  country: string | null;
   tracking_code: string | null;
   customer_name: string;
   phone: string;
@@ -174,7 +175,7 @@ function Orders({ header }: { header: React.ReactNode }) {
     const since = new Date(Date.now() - 14 * 86400000).toISOString();
     const { data } = await sb
       .from("orders")
-      .select("id,number,status,mode,slot_date,slot_time,city,tracking_code,customer_name,phone,street,postcode,door,note,total_cents,paid_at,created_at,public_token,whatsapp_updates,order_items(name,qty,option)")
+      .select("id,number,status,mode,slot_date,slot_time,city,country,tracking_code,customer_name,phone,street,postcode,door,note,total_cents,paid_at,created_at,public_token,whatsapp_updates,order_items(name,qty,option)")
       .neq("status", "pending_payment")
       .or(`slot_date.gte.${viennaToday(-1)},and(mode.eq.shipping,created_at.gte.${since})`)
       .order("created_at")
@@ -288,7 +289,7 @@ function Orders({ header }: { header: React.ReactNode }) {
                         <span className="k-pill green">{o.paid_at ? "Paid" : "Unpaid"} {euro(o.total_cents)}</span>
                       </div>
                       {o.mode !== "pickup" && o.street && (
-                        <p className="k-addr">{o.street}{o.door ? `, ${o.door}` : ""}, {o.postcode}{o.city ? ` ${o.city}` : ""}</p>
+                        <p className="k-addr">{o.street}{o.door ? `, ${o.door}` : ""}, {o.postcode}{o.city ? ` ${o.city}` : ""}{o.country && o.country !== "AT" ? `, ${o.country}` : ""}</p>
                       )}
                       {o.mode === "shipping" && (o.status === "cooking" || o.status === "ready") && (
                         <label className="field" style={{ fontSize: 12 }}>
