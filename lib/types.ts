@@ -20,6 +20,8 @@ export interface Product {
   allergens: string;
   options: string[];
   active?: boolean;
+  description?: string | null;
+  description_de?: string | null;
 }
 
 export interface Settings {

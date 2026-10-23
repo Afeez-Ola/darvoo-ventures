@@ -126,6 +126,12 @@ const en = {
   err_CHOOSE_OPTION: "A dish in your basket needs a choice. Please remove it and add it again.",
   choose: "Choose",
   deliveryZones: "Delivery {near} within about 10 km of our kitchen in 1110 Simmering, {far} to {list}.",
+  servicesTitle: "Great events, delicious moments",
+  servicesIntro: "Besides the trays, Darvoo plans and runs your whole event.",
+  servicesList: "Catering of all kinds|Hostess and host for events|Wedding planning|Birthday celebrations|Team building events|Party souvenirs|Wine and cocktail bar|Special surprise parties",
+  servicesMore: "and more. Tell us the date, the number of guests and what you need, and we send you a quote.",
+  servicesWhatsApp: "Ask on WhatsApp",
+  servicesWaText: "Hello Darvoo, I would like a quote for an event.",
 };
 
 const de: typeof en = {
@@ -250,6 +256,12 @@ const de: typeof en = {
   err_CHOOSE_OPTION: "Bei einem Gericht fehlt die Auswahl. Bitte entfernen und neu hinzufügen.",
   choose: "Auswahl",
   deliveryZones: "Lieferung {near} im Umkreis von ca. 10 km um unsere Küche in 1110 Simmering, {far} nach {list}.",
+  servicesTitle: "Große Feste, köstliche Momente",
+  servicesIntro: "Neben den Party-Platten plant und betreut Darvoo dein ganzes Event.",
+  servicesList: "Catering aller Art|Hostess und Host für Events|Hochzeitsplanung|Geburtstagsfeiern|Teambuilding-Events|Gastgeschenke|Wein- und Cocktailbar|Überraschungspartys",
+  servicesMore: "und mehr. Sag uns Datum, Gästezahl und was du brauchst, und wir schicken dir ein Angebot.",
+  servicesWhatsApp: "Per WhatsApp anfragen",
+  servicesWaText: "Hallo Darvoo, ich hätte gern ein Angebot für ein Event.",
 };
 
 export type Dict = typeof en;

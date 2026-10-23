@@ -8,7 +8,7 @@ Built with Next.js 15 and Supabase (Postgres, Auth, Realtime).
 
 | Page | What it does |
 |---|---|
-| `/` | Menu with three tabs (Dishes, Food stuffs, Events), photos from Darvoo's own catalogue, EN/DE switch |
+| `/` | Menu with three tabs (Dishes, Food stuffs, Events), photos and a short EN/DE description per item (`products.description`, `description_de`), event services on the Events tab, EN/DE switch |
 | `/basket` | Basket and three ways to get it: **delivery** in Vienna (postcodes starting with 1, editable) or **pickup** at the Vienna kitchen (Hauffgasse 6, 1110), both with a day and time slot that closes when full; or **shipping** across Austria for food stuffs only (no slot, parcel) |
 | `/checkout` | Contact details, payment method, terms, places the order |
 | `/track/?t=…` | Live order status for the customer (refreshes every 15 s). Parcels show the tracking number with a link to post.at. `/track/` alone lists orders placed on this device |
@@ -85,4 +85,4 @@ No environment variables are needed: the Supabase URL and publishable key are pu
 
 ## Database
 
-SQL for a fresh project is in `supabase/migrations/`. Apply them in order (`0001` to `0008`); `0004` must run on its own because it adds an enum value.
+SQL for a fresh project is in `supabase/migrations/`. Apply them in order (`0001` to `0009`); `0004` must run on its own because it adds an enum value.

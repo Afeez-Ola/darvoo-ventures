@@ -180,3 +180,19 @@ img { display: block; max-width: 100%; }
 .footer-social { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 4px; }
 .footer-social a { display: inline-flex; align-items: center; height: 36px; padding: 0 14px; border-radius: 18px; background: var(--green-tint); color: var(--green); font-weight: 700; text-decoration: none; font-size: 13px; }
 .footer-social a:hover { background: var(--green); color: #fff; }
+
+/* product description on menu cards */
+.card-desc { margin: 0; font-size: 12.5px; line-height: 17px; color: var(--muted); display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+
+/* event services (Events tab) */
+.services { margin: 28px 20px 0; padding: 20px; border-radius: 20px; background: var(--green, #0B6B34); color: #fff; }
+.services h2 { margin: 0 0 6px; font-size: 22px; line-height: 28px; color: var(--gold, #E2B23A); }
+.services p { margin: 0; font-size: 14px; line-height: 20px; opacity: .92; }
+.services ul { list-style: none; padding: 0; margin: 14px 0; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+.services li { padding: 10px 12px; border-radius: 12px; background: rgba(255,255,255,.1); font-size: 13.5px; font-weight: 600; line-height: 18px; }
+.services .services-more { font-size: 13px; }
+.services-actions { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 14px; }
+.services-actions a { height: 46px; padding: 0 20px; font-size: 14px; width: auto; flex: 1 1 auto; }
+.services-actions .primary { background: var(--gold); color: var(--ink); }
+.services-actions .primary:hover { background: #ffe38f; color: var(--ink); }
+.services-actions .outline { color: #fff; border-color: rgba(255,255,255,.6); background: transparent; }
