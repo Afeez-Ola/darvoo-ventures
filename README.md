@@ -9,16 +9,16 @@ Built with Next.js 15 and Supabase (Postgres, Auth, Realtime).
 | Page | What it does |
 |---|---|
 | `/` | Menu with three tabs (Dishes, Food stuffs, Events), photos from Darvoo's own catalogue, EN/DE switch |
-| `/basket` | Basket, delivery or pickup, day and time slot (slots close when full), address, note for the kitchen |
+| `/basket` | Basket and three ways to get it: **delivery** in Vienna (postcodes starting with 1, editable) or **pickup** in Wilfersdorf, both with a day and time slot that closes when full; or **shipping** across Austria for food stuffs only (no slot, parcel) |
 | `/checkout` | Contact details, payment method, terms, places the order |
-| `/track/?t=…` | Live order status for the customer (refreshes every 15 s); `/track/` alone lists orders placed on this device |
-| `/kitchen` | Staff only. **Orders**: live board, one tap to move an order forward, WhatsApp update button, pause ordering. **Menu & prices**: edit prices, sizes, allergen codes, hide items. **Slots & settings**: delivery fee, same day cut-off, booking window, time slots and capacity |
+| `/track/?t=…` | Live order status for the customer (refreshes every 15 s). Parcels show the tracking number with a link to post.at. `/track/` alone lists orders placed on this device |
+| `/kitchen` | Staff only. **Orders**: live board by day plus a **Parcels to post** view, one tap to move an order forward, tracking number when a parcel is posted, WhatsApp update button, pause ordering. **Menu & prices**: edit prices, sizes, allergen codes, hide items. **Slots & settings**: Vienna delivery fee and postcodes, shipping fee, free shipping threshold, dispatch days, same day cut-off, booking window, time slots and capacity |
 | `/impressum`, `/agb`, `/datenschutz`, `/allergene` | Legal pages (German). Yellow highlights mark facts the business still has to fill in |
 
 ## How ordering works
 
 1. The browser sends **only product ids and quantities** to `place_order()`. Prices, delivery fee and totals are always read from the database, so a customer can't change a price.
-2. `place_order()` also checks that ordering isn't paused, the slot still has room, and delivery orders have an address.
+2. `place_order()` also checks that ordering isn't paused, the slot still has room, delivery addresses are in the delivery area, and shipped orders contain only food stuffs.
 3. Payment is currently **mocked** (`mock_pay()` marks the order paid). See *Going live with Stripe* below.
 4. Every status change is logged in `order_events` by a trigger. That log feeds the customer's timeline.
 5. Customers can't read the `orders` table at all. They only see their own order, through `get_order(token)` and the secret link in their tracking URL.
@@ -52,7 +52,7 @@ Easiest: sign in at `/kitchen` and use the **Menu & prices** and **Slots & setti
 Or directly in Supabase:
 * `products`: `price_cents` (3000 = €30,00), `allergens` (e.g. `A, C, D`), `active` to hide an item, `sort` for order
 * `slot_templates`: delivery and pickup times and how many orders each can take
-* `settings`: `delivery_fee_cents`, `same_day_cutoff`, `booking_days`, `accepting_orders`
+* `settings`: `delivery_fee_cents`, `delivery_postcode_prefixes`, `shipping_fee_cents`, `free_shipping_from_cents`, `ship_dispatch_days`, `same_day_cutoff`, `booking_days`, `accepting_orders`
 
 Photos live in `public/menu/`. Add a file and put its path in `image_path`.
 
@@ -75,7 +75,7 @@ No environment variables are needed: the Supabase URL and publishable key are pu
 
 ## Still to do
 
-- [ ] Real prices, tray sizes, delivery area and fee
+- [ ] Real prices, tray sizes, Vienna delivery fee and shipping fee (the €6,90 shipping fee is a placeholder)
 - [ ] Stripe (above)
 - [ ] Automatic WhatsApp messages (today the kitchen taps "WhatsApp update", which opens WhatsApp with the message ready to send; full automation needs the WhatsApp Business API)
 - [ ] Fill the yellow gaps in Impressum, AGB and Datenschutz, and have them checked
@@ -84,4 +84,4 @@ No environment variables are needed: the Supabase URL and publishable key are pu
 
 ## Database
 
-SQL for a fresh project is in `supabase/migrations/`. Apply them in order (`0001`, `0002`, `0003`).
+SQL for a fresh project is in `supabase/migrations/`. Apply them in order (`0001` to `0005`); `0004` must run on its own because it adds an enum value.

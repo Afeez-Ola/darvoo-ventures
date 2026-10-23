@@ -152,6 +152,10 @@ export function SettingsEditor() {
   const [fee, setFee] = useState("");
   const [cutoff, setCutoff] = useState("");
   const [days, setDays] = useState("7");
+  const [shipFee, setShipFee] = useState("");
+  const [freeShip, setFreeShip] = useState("");
+  const [dispatch, setDispatch] = useState("2");
+  const [prefixes, setPrefixes] = useState("1");
   const [slots, setSlots] = useState<SlotRow[] | null>(null);
   const [original, setOriginal] = useState<SlotRow[]>([]);
   const [newTime, setNewTime] = useState("");
@@ -167,6 +171,10 @@ export function SettingsEditor() {
       setFee(toEuroInput(s.data.delivery_fee_cents));
       setCutoff(hhmm(s.data.same_day_cutoff));
       setDays(String(s.data.booking_days));
+      setShipFee(toEuroInput(s.data.shipping_fee_cents));
+      setFreeShip(s.data.free_shipping_from_cents == null ? "" : toEuroInput(s.data.free_shipping_from_cents));
+      setDispatch(String(s.data.ship_dispatch_days));
+      setPrefixes((s.data.delivery_postcode_prefixes ?? []).join(", "));
     }
     setSlots((t.data ?? []) as SlotRow[]);
     setOriginal((t.data ?? []) as SlotRow[]);
@@ -179,12 +187,24 @@ export function SettingsEditor() {
   const saveSettings = async () => {
     const c = toCents(fee);
     const d = parseInt(days, 10);
-    if (!Number.isFinite(c) || c < 0 || !/^\d{2}:\d{2}$/.test(cutoff) || !(d >= 0 && d <= 60)) {
-      setMsg("Check the values: fee is a number, cut-off like 15:00, booking days 0 to 60.");
+    const sf = toCents(shipFee);
+    const fs = freeShip.trim() === "" ? null : toCents(freeShip);
+    const dd = parseInt(dispatch, 10);
+    const pre = prefixes.split(",").map((x) => x.trim()).filter(Boolean);
+    if (
+      !Number.isFinite(c) || c < 0 || !/^\d{2}:\d{2}$/.test(cutoff) || !(d >= 0 && d <= 60) ||
+      !Number.isFinite(sf) || sf < 0 || (fs !== null && (!Number.isFinite(fs) || fs < 0)) || !(dd >= 0 && dd <= 30) ||
+      !pre.length || pre.some((x) => !/^\d{1,4}$/.test(x))
+    ) {
+      setMsg("Check the values: fees are numbers, cut-off like 15:00, booking days 0 to 60, dispatch days 0 to 30, postcodes like 1 or 2193.");
       return;
     }
     setBusy(true);
-    const { error } = await sb.from("settings").update({ delivery_fee_cents: c, same_day_cutoff: cutoff, booking_days: d, updated_at: new Date().toISOString() }).eq("id", 1);
+    const { error } = await sb.from("settings").update({
+      delivery_fee_cents: c, same_day_cutoff: cutoff, booking_days: d,
+      shipping_fee_cents: sf, free_shipping_from_cents: fs, ship_dispatch_days: dd, delivery_postcode_prefixes: pre,
+      updated_at: new Date().toISOString(),
+    }).eq("id", 1);
     setMsg(error ? "Could not save: " + error.message : "Settings saved.");
     setBusy(false);
   };
@@ -207,9 +227,21 @@ export function SettingsEditor() {
       <section className="k-panel">
         <h2>Delivery and ordering</h2>
         <div className="k-form-row">
-          <label className="field">Delivery fee (€)<input inputMode="decimal" value={fee} onChange={(e) => setFee(e.target.value)} /></label>
+          <label className="field">Vienna delivery fee (€)<input inputMode="decimal" value={fee} onChange={(e) => setFee(e.target.value)} /></label>
           <label className="field">Same day orders until<input type="time" value={cutoff} onChange={(e) => setCutoff(e.target.value)} /></label>
           <label className="field">Days ahead customers can book<input type="number" min={0} max={60} value={days} onChange={(e) => setDays(e.target.value)} /></label>
+        </div>
+        <div className="k-form-row">
+          <label className="field">Delivery postcodes (start with)
+            <input value={prefixes} onChange={(e) => setPrefixes(e.target.value)} placeholder="1, 2193" />
+            <span className="k-muted small" style={{ fontWeight: 400 }}>1 = all of Vienna. Add more separated by commas, e.g. 1, 2193.</span>
+          </label>
+        </div>
+        <h2 style={{ marginTop: 8 }}>Shipping food stuffs across Austria</h2>
+        <div className="k-form-row">
+          <label className="field">Shipping fee (€)<input inputMode="decimal" value={shipFee} onChange={(e) => setShipFee(e.target.value)} /></label>
+          <label className="field">Free shipping from (€, empty = never)<input inputMode="decimal" value={freeShip} onChange={(e) => setFreeShip(e.target.value)} /></label>
+          <label className="field">Posted within (working days)<input type="number" min={0} max={30} value={dispatch} onChange={(e) => setDispatch(e.target.value)} /></label>
         </div>
         <button className="k-btn" style={{ width: "auto", padding: "0 22px" }} disabled={busy} onClick={saveSettings}>Save settings</button>
       </section>

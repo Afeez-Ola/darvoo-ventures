@@ -21,6 +21,7 @@ export default function Impressum() {
 
       <h2>Gewerbe</h2>
       <p>
+        Gewerbe: Gastgewerbe (reglementiertes Gewerbe), Berufsbezeichnung verliehen in Österreich<br />
         GISA-Zahl: 32952650<br />
         Gewerbebehörde: Bezirkshauptmannschaft Mistelbach<br />
         Kammerzugehörigkeit: Wirtschaftskammer Niederösterreich<br />

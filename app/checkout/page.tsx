@@ -8,6 +8,8 @@ import { useCart } from "@/lib/cart";
 import { supabaseBrowser } from "@/lib/supabase";
 import { dayLabel, euro, hhmm } from "@/lib/format";
 import { rememberOrder } from "@/lib/orders";
+import { feeFor, SETTINGS_COLS } from "@/lib/fees";
+import type { Settings } from "@/lib/types";
 import PageBar from "@/components/PageBar";
 import { Lock, Truck, Pin } from "@/components/Icons";
 
@@ -37,14 +39,15 @@ export default function CheckoutPage() {
       if (saved.phone) setPhone(saved.phone);
       if (saved.email) setEmail(saved.email);
     } catch {}
-    supabaseBrowser().from("settings").select("delivery_fee_cents").single()
-      .then(({ data }) => setFee(f.mode === "delivery" ? data?.delivery_fee_cents ?? 0 : 0));
-  }, [f.mode]);
+    supabaseBrowser().from("settings").select(SETTINGS_COLS).single()
+      .then(({ data }) => setFee(feeFor(f.mode, data as Settings, cart.subtotal)));
+  }, [f.mode, cart.subtotal]);
 
   useEffect(() => {
     if (placedRef.current) return;
-    if (cart.ready && (cart.count === 0 || !f.slot_date || !f.slot_time)) router.replace("/basket/");
-  }, [cart.ready, cart.count, f.slot_date, f.slot_time, router]);
+    const needsSlot = f.mode !== "shipping";
+    if (cart.ready && (cart.count === 0 || (needsSlot && (!f.slot_date || !f.slot_time)))) router.replace("/basket/");
+  }, [cart.ready, cart.count, f.mode, f.slot_date, f.slot_time, router]);
 
   const total = cart.subtotal + fee;
   const canPay = name.trim() && phone.trim() && terms && !busy;
@@ -56,14 +59,15 @@ export default function CheckoutPage() {
     const { data, error: placeErr } = await sb.rpc("place_order", {
       payload: {
         mode: f.mode,
-        slot_date: f.slot_date,
-        slot_time: f.slot_time,
+        slot_date: f.mode === "shipping" ? null : f.slot_date,
+        slot_time: f.mode === "shipping" ? null : f.slot_time,
         customer_name: name,
         phone,
         email,
         whatsapp_updates: whatsapp,
         street: f.street,
         postcode: f.postcode,
+        city: f.mode === "shipping" ? f.city : "",
         door: f.door,
         note: f.note,
         payment_method: method,
@@ -103,14 +107,17 @@ export default function CheckoutPage() {
       <PageBar title={t.payConfirm} back="/basket" backLabel={t.yourBasket} />
 
       <section className="summary">
-        <span style={{ color: "var(--green)" }}>{f.mode === "delivery" ? <Truck size={22} /> : <Pin />}</span>
+        <span style={{ color: "var(--green)" }}>{f.mode === "pickup" ? <Pin /> : <Truck size={22} />}</span>
         <div style={{ flex: 1, display: "flex", flexDirection: "column", gap: 2 }}>
           <strong style={{ fontSize: 14 }}>
-            {f.mode === "delivery" ? t.delivery : t.pickup} · {f.slot_date ? dayLabel(f.slot_date, lang) : ""} {f.slot_time ? hhmm(f.slot_time) : ""}
+            {f.mode === "shipping"
+              ? t.shippingAustria
+              : `${f.mode === "delivery" ? t.delivery : t.pickup} · ${f.slot_date ? dayLabel(f.slot_date, lang) : ""} ${f.slot_time ? hhmm(f.slot_time) : ""}`}
           </strong>
           <span style={{ fontSize: 13, color: "var(--muted)" }}>
             {cart.count} {t.items}
             {f.mode === "delivery" && f.street ? ` · ${f.street}, ${f.postcode}` : ""}
+            {f.mode === "shipping" && f.street ? ` · ${f.street}, ${f.postcode} ${f.city}` : ""}
           </span>
         </div>
         <Link href="/basket" style={{ fontSize: 14, fontWeight: 700, padding: "12px 4px" }}>{t.edit}</Link>

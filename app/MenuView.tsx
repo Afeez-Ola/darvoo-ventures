@@ -56,6 +56,7 @@ export default function MenuView({
                 <Clock /> {t.orderUntil} {hhmm(settings.same_day_cutoff)}
               </span>
             )}
+            <span className="chip">{t.shippingAustria}</span>
             <span className="chip">{t.eventCatering}</span>
           </div>
         </div>

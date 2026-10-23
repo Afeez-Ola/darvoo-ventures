@@ -6,14 +6,14 @@ export type Lang = "en" | "de";
 
 const en = {
   tagline: "Ventures · Wilfersdorf, Austria",
-  heroEyebrow: "Cooked and uncooked · Home delivery",
+  heroEyebrow: "Cooked and uncooked · Delivery in Vienna",
   heroTitle: "Nigerian dishes and food stuffs, delivered to your doorstep.",
   orderUntil: "Same day orders until",
   eventCatering: "Event catering",
   dishes: "Dishes",
   groceries: "Food stuffs",
   events: "Events",
-  groceriesNote: "Packed in Wilfersdorf and delivered or sent to you. Store in a dry, cool place.",
+  groceriesNote: "Posted anywhere in Austria, or delivered with your food in Vienna. Store in a dry, cool place.",
   eventsNote: "Party trays for weddings, birthdays and church events. Book a few days ahead, or call us for a quote.",
   paused: "We are not taking new orders right now. Please check back soon or call us.",
   planningEvent: "Planning an event?",
@@ -41,7 +41,7 @@ const en = {
   postcode: "Postcode",
   door: "Stiege / Tür",
   pickupTitle: "Pick up from Darvoo kitchen",
-  pickupAddress: "Mistelbacherstraße 31, Wilfersdorf. We text you when it is ready.",
+  pickupAddress: "Mistelbacherstraße 31, 2193 Wilfersdorf. We text you when it is ready.",
   kitchenNote: "Note for the kitchen (optional)",
   subtotal: "Subtotal",
   deliveryFee: "Delivery fee",
@@ -100,18 +100,41 @@ const en = {
   impressum: "Imprint",
   agb: "Terms (AGB)",
   privacy: "Privacy",
+  shipping: "Shipping",
+  shippingAustria: "Shipping across Austria",
+  deliveryVienna: "Delivery in Vienna",
+  deliveryAreaNote: "We deliver cooked food to Vienna postcodes (1010 to 1230).",
+  outsideArea: "That postcode is outside Vienna. Choose pickup, or shipping for food stuffs.",
+  shipOnlyGroceries: "Only food stuffs can be posted. Cooked dishes and party trays need delivery in Vienna or pickup.",
+  shipAddress: "Shipping address",
+  city: "City",
+  shipNote: "Packed in Wilfersdorf and sent within {n} working days, anywhere in Austria.",
+  freeShipFrom: "Free shipping from {x}",
+  shippingFee: "Shipping",
+  shipHeadlineWaiting: "Sent within {n} working days",
+  shipHeadlineOnWay: "On its way to {city}",
+  shipHeadlineDone: "Delivered to {city}",
+  shipIntro: "We will message you when the parcel is posted, with its tracking number.",
+  trackingNumber: "Tracking number",
+  trackParcel: "Track parcel",
+  st_ship_cooking: "Being packed",
+  st_ship_out_for_delivery: "Posted",
+  st_ship_completed: "Delivered",
+  err_OUTSIDE_DELIVERY_AREA: "We only deliver cooked food in Vienna. Choose pickup, or shipping for food stuffs.",
+  err_BAD_POSTCODE: "Please enter a 4 digit Austrian postcode.",
+  err_NOT_SHIPPABLE: "Only food stuffs can be shipped. Remove cooked dishes or choose delivery or pickup.",
 };
 
 const de: typeof en = {
   tagline: "Ventures · Wilfersdorf, Österreich",
-  heroEyebrow: "Gekocht und ungekocht · Lieferung nach Hause",
+  heroEyebrow: "Gekocht und ungekocht · Lieferung in Wien",
   heroTitle: "Nigerianische Gerichte und Lebensmittel, direkt an deine Tür.",
   orderUntil: "Bestellungen für heute bis",
   eventCatering: "Event-Catering",
   dishes: "Gerichte",
   groceries: "Lebensmittel",
   events: "Events",
-  groceriesNote: "In Wilfersdorf verpackt und geliefert oder verschickt. Kühl und trocken lagern.",
+  groceriesNote: "Versand in ganz Österreich, oder Lieferung mit deinem Essen in Wien. Kühl und trocken lagern.",
   eventsNote: "Party-Platten für Hochzeiten, Geburtstage und Feiern. Ein paar Tage im Voraus bestellen oder für ein Angebot anrufen.",
   paused: "Wir nehmen gerade keine neuen Bestellungen an. Bitte später wieder vorbeischauen oder anrufen.",
   planningEvent: "Planst du ein Event?",
@@ -139,7 +162,7 @@ const de: typeof en = {
   postcode: "PLZ",
   door: "Stiege / Tür",
   pickupTitle: "Abholung in der Darvoo Küche",
-  pickupAddress: "Mistelbacherstraße 31, Wilfersdorf. Wir schreiben dir, sobald es fertig ist.",
+  pickupAddress: "Mistelbacherstraße 31, 2193 Wilfersdorf. Wir schreiben dir, sobald es fertig ist.",
   kitchenNote: "Notiz für die Küche (optional)",
   subtotal: "Zwischensumme",
   deliveryFee: "Liefergebühr",
@@ -198,6 +221,29 @@ const de: typeof en = {
   impressum: "Impressum",
   agb: "AGB",
   privacy: "Datenschutz",
+  shipping: "Versand",
+  shippingAustria: "Versand in ganz Österreich",
+  deliveryVienna: "Lieferung in Wien",
+  deliveryAreaNote: "Gekochte Speisen liefern wir an Wiener Postleitzahlen (1010 bis 1230).",
+  outsideArea: "Diese PLZ liegt außerhalb von Wien. Bitte Abholung wählen, oder Versand für Lebensmittel.",
+  shipOnlyGroceries: "Nur Lebensmittel können verschickt werden. Gekochte Speisen und Party-Platten gibt es per Lieferung in Wien oder zur Abholung.",
+  shipAddress: "Versandadresse",
+  city: "Ort",
+  shipNote: "In Wilfersdorf verpackt und innerhalb von {n} Werktagen in ganz Österreich verschickt.",
+  freeShipFrom: "Gratis Versand ab {x}",
+  shippingFee: "Versand",
+  shipHeadlineWaiting: "Versand innerhalb von {n} Werktagen",
+  shipHeadlineOnWay: "Unterwegs nach {city}",
+  shipHeadlineDone: "Zugestellt in {city}",
+  shipIntro: "Wir schreiben dir, sobald das Paket unterwegs ist, mit der Sendungsnummer.",
+  trackingNumber: "Sendungsnummer",
+  trackParcel: "Sendung verfolgen",
+  st_ship_cooking: "Wird verpackt",
+  st_ship_out_for_delivery: "Versendet",
+  st_ship_completed: "Zugestellt",
+  err_OUTSIDE_DELIVERY_AREA: "Gekochte Speisen liefern wir nur in Wien. Bitte Abholung wählen, oder Versand für Lebensmittel.",
+  err_BAD_POSTCODE: "Bitte eine 4-stellige österreichische PLZ angeben.",
+  err_NOT_SHIPPABLE: "Nur Lebensmittel können verschickt werden. Bitte gekochte Speisen entfernen oder Lieferung bzw. Abholung wählen.",
 };
 
 export type Dict = typeof en;
@@ -231,6 +277,11 @@ export function I18nProvider({ children }: { children: ReactNode }) {
 }
 
 export const useI18n = () => useContext(Ctx);
+
+/** Fill {n}, {x}, {city} placeholders in a translated string. */
+export function fill(text: string, vars: Record<string, string | number>) {
+  return text.replace(/\{(\w+)\}/g, (_, k) => String(vars[k] ?? ""));
+}
 
 export function errorText(t: Dict, message: string | undefined) {
   const code = (message || "").match(/[A-Z_]{6,}/)?.[0];

@@ -13,8 +13,10 @@ interface KOrder {
   number: number;
   status: OrderStatus;
   mode: Mode;
-  slot_date: string;
-  slot_time: string;
+  slot_date: string | null;
+  slot_time: string | null;
+  city: string | null;
+  tracking_code: string | null;
   customer_name: string;
   phone: string;
   street: string | null;
@@ -31,13 +33,24 @@ interface KOrder {
 
 const COLUMNS: { status: OrderStatus; title: string; tone: string }[] = [
   { status: "received", title: "New orders", tone: "gold" },
-  { status: "cooking", title: "Cooking", tone: "orange" },
+  { status: "cooking", title: "Cooking / packing", tone: "orange" },
   { status: "ready", title: "Ready", tone: "green" },
   { status: "out_for_delivery", title: "On the way", tone: "blue" },
   { status: "completed", title: "Done", tone: "grey" },
 ];
 
+const PARCELS = "parcels";
+
 function nextStep(o: KOrder): { to: OrderStatus; label: string } | null {
+  if (o.mode === "shipping") {
+    switch (o.status) {
+      case "received": return { to: "cooking", label: "Accept and start packing" };
+      case "cooking":
+      case "ready": return { to: "out_for_delivery", label: "Mark posted" };
+      case "out_for_delivery": return { to: "completed", label: "Mark delivered" };
+      default: return null;
+    }
+  }
   switch (o.status) {
     case "received": return { to: "cooking", label: "Accept and start cooking" };
     case "cooking": return { to: "ready", label: "Mark ready" };
@@ -65,8 +78,23 @@ const WA_TEXT: Partial<Record<OrderStatus, string>> = {
   cancelled: "deine Bestellung wurde leider storniert. Wir melden uns wegen der Rückerstattung",
 };
 
+const WA_SHIP: Partial<Record<OrderStatus, string>> = {
+  received: "wir haben deine Bestellung erhalten und verschicken sie bald",
+  cooking: "dein Paket wird gerade verpackt",
+  ready: "dein Paket wird gerade verpackt",
+  out_for_delivery: "dein Paket ist unterwegs",
+  completed: "dein Paket wurde zugestellt. Danke für deine Bestellung",
+  cancelled: WA_TEXT.cancelled,
+};
+
 function waLink(o: KOrder) {
   const first = o.customer_name.split(" ")[0];
+  if (o.mode === "shipping") {
+    const link = `${window.location.origin}/track/?t=${o.public_token}`;
+    const code = o.status === "out_for_delivery" && o.tracking_code ? `. Sendungsnummer: ${o.tracking_code}` : "";
+    const text = `Hallo ${first}, ${WA_SHIP[o.status] ?? "hier ein Update zu deiner Bestellung"}${code} (Bestellung #${o.number}). Status live verfolgen: ${link}\n\nDarVoo Ventures`;
+    return `https://wa.me/${waNumber(o.phone)}?text=${encodeURIComponent(text)}`;
+  }
   const pickupReady = o.status === "ready" && o.mode === "pickup" ? " und kann in der Mistelbacherstraße 31 abgeholt werden" : "";
   const link = `${window.location.origin}/track/?t=${o.public_token}`;
   const text = `Hallo ${first}, ${WA_TEXT[o.status] ?? "hier ein Update zu deiner Bestellung"}${pickupReady} (Bestellung #${o.number}). Status live verfolgen: ${link}\n\nDarVoo Ventures`;
@@ -138,19 +166,22 @@ function Orders({ header }: { header: React.ReactNode }) {
   const [orders, setOrders] = useState<KOrder[]>([]);
   const [accepting, setAccepting] = useState<boolean | null>(null);
   const [busyId, setBusyId] = useState<string | null>(null);
+  const [codes, setCodes] = useState<Record<string, string>>({});
   const [day, setDay] = useState(viennaToday());
   const [live, setLive] = useState(false);
 
   const load = useCallback(async () => {
+    const since = new Date(Date.now() - 14 * 86400000).toISOString();
     const { data } = await sb
       .from("orders")
-      .select("id,number,status,mode,slot_date,slot_time,customer_name,phone,street,postcode,door,note,total_cents,paid_at,created_at,public_token,whatsapp_updates,order_items(name,qty)")
+      .select("id,number,status,mode,slot_date,slot_time,city,tracking_code,customer_name,phone,street,postcode,door,note,total_cents,paid_at,created_at,public_token,whatsapp_updates,order_items(name,qty)")
       .neq("status", "pending_payment")
-      .gte("slot_date", viennaToday(-1))
-      .order("slot_date")
-      .order("slot_time")
-      .limit(300);
-    setOrders((data ?? []) as KOrder[]);
+      .or(`slot_date.gte.${viennaToday(-1)},and(mode.eq.shipping,created_at.gte.${since})`)
+      .order("created_at")
+      .limit(400);
+    const list = (data ?? []) as KOrder[];
+    list.sort((a, b) => `${a.slot_date ?? ""}${a.slot_time ?? ""}${a.created_at}`.localeCompare(`${b.slot_date ?? ""}${b.slot_time ?? ""}${b.created_at}`));
+    setOrders(list);
   }, [sb]);
 
   useEffect(() => {
@@ -169,8 +200,10 @@ function Orders({ header }: { header: React.ReactNode }) {
 
   const advance = async (o: KOrder, to: OrderStatus) => {
     setBusyId(o.id);
-    setOrders((prev) => prev.map((x) => (x.id === o.id ? { ...x, status: to } : x)));
-    const { error } = await sb.from("orders").update({ status: to }).eq("id", o.id);
+    const patch: { status: OrderStatus; tracking_code?: string | null } = { status: to };
+    if (o.mode === "shipping" && to === "out_for_delivery") patch.tracking_code = (codes[o.id] ?? "").trim().toUpperCase() || null;
+    setOrders((prev) => prev.map((x) => (x.id === o.id ? { ...x, ...patch } : x)));
+    const { error } = await sb.from("orders").update(patch).eq("id", o.id);
     if (error) {
       alert("Could not update order: " + error.message);
       load();
@@ -188,8 +221,13 @@ function Orders({ header }: { header: React.ReactNode }) {
     }
   };
 
-  const days = useMemo(() => Array.from(new Set([viennaToday(), ...orders.map((o) => o.slot_date)])).sort(), [orders]);
-  const forDay = orders.filter((o) => o.slot_date === day);
+  const days = useMemo(
+    () => Array.from(new Set([viennaToday(), ...orders.filter((o) => o.slot_date).map((o) => o.slot_date as string)])).sort(),
+    [orders]
+  );
+  const parcels = orders.filter((o) => o.mode === "shipping");
+  const openParcels = parcels.filter((o) => !["completed", "cancelled"].includes(o.status)).length;
+  const forDay = day === PARCELS ? parcels : orders.filter((o) => o.mode !== "shipping" && o.slot_date === day);
   const open = forDay.filter((o) => !["completed", "cancelled"].includes(o.status)).length;
   const newCount = orders.filter((o) => o.status === "received").length;
 
@@ -202,7 +240,7 @@ function Orders({ header }: { header: React.ReactNode }) {
             <span className={`k-live ${live ? "on" : ""}`}>{live ? "Live updates on" : "Connecting…"}</span>
           </div>
           <div className="k-stats">
-            <span className="k-stat"><strong>{open}</strong> open on {dayLabel(day, "en")}</span>
+            <span className="k-stat"><strong>{open}</strong> {day === PARCELS ? "open parcels" : `open on ${dayLabel(day, "en")}`}</span>
             {newCount > 0 && <span className="k-stat alert"><strong>{newCount}</strong> new to accept</span>}
             <button className={`k-pause ${accepting ? "" : "paused"}`} onClick={togglePause} aria-pressed={accepting === false}>
               {accepting ? "Accepting orders · Pause" : "Paused · Resume orders"}
@@ -215,9 +253,12 @@ function Orders({ header }: { header: React.ReactNode }) {
         <div className="days" style={{ marginBottom: 18 }}>
           {days.map((d) => (
             <button key={d} className="day" aria-pressed={d === day} onClick={() => setDay(d)}>
-              {dayLabel(d, "en")} ({orders.filter((o) => o.slot_date === d && o.status !== "cancelled").length})
+              {dayLabel(d, "en")} ({orders.filter((o) => o.mode !== "shipping" && o.slot_date === d && o.status !== "cancelled").length})
             </button>
           ))}
+          <button className="day" aria-pressed={day === PARCELS} onClick={() => setDay(PARCELS)}>
+            Parcels to post ({openParcels})
+          </button>
         </div>
         <div className="k-cols">
           {COLUMNS.map((c) => {
@@ -234,19 +275,29 @@ function Orders({ header }: { header: React.ReactNode }) {
                     <article key={o.id} className="k-card">
                       <div className="k-card-top">
                         <strong>#{o.number} · {o.customer_name}</strong>
-                        <span className="k-time">{hhmm(o.slot_time)}</span>
+                        <span className="k-time">{o.slot_time ? hhmm(o.slot_time) : "Parcel"}</span>
                       </div>
                       <ul className="k-items">
                         {o.order_items.map((i, k) => <li key={k}>{i.qty}× {i.name}</li>)}
                       </ul>
                       {o.note && <p className="k-note">“{o.note}”</p>}
                       <div className="k-tags">
-                        <span className={`k-pill ${o.mode === "delivery" ? "blue" : "gold"}`}>{o.mode === "delivery" ? "Delivery" : "Pickup"}</span>
+                        <span className={`k-pill ${o.mode === "pickup" ? "gold" : "blue"}`}>
+                          {o.mode === "delivery" ? "Delivery" : o.mode === "shipping" ? "Shipping" : "Pickup"}
+                        </span>
                         <span className="k-pill green">{o.paid_at ? "Paid" : "Unpaid"} {euro(o.total_cents)}</span>
                       </div>
-                      {o.mode === "delivery" && o.street && (
-                        <p className="k-addr">{o.street}{o.door ? `, ${o.door}` : ""}, {o.postcode}</p>
+                      {o.mode !== "pickup" && o.street && (
+                        <p className="k-addr">{o.street}{o.door ? `, ${o.door}` : ""}, {o.postcode}{o.city ? ` ${o.city}` : ""}</p>
                       )}
+                      {o.mode === "shipping" && (o.status === "cooking" || o.status === "ready") && (
+                        <label className="field" style={{ fontSize: 12 }}>
+                          Tracking number (optional)
+                          <input value={codes[o.id] ?? ""} onChange={(e) => setCodes((c) => ({ ...c, [o.id]: e.target.value }))}
+                            placeholder="from the post office receipt" style={{ height: 40 }} />
+                        </label>
+                      )}
+                      {o.tracking_code && <p className="k-addr">Tracking: <strong>{o.tracking_code}</strong></p>}
                       <div className="k-contact">
                         <a className="k-phone" href={`tel:${o.phone.replace(/\s/g, "")}`}>{o.phone}</a>
                         <a className={`k-wa ${o.whatsapp_updates ? "" : "off"}`} href={waLink(o)} target="_blank" rel="noopener"

@@ -18,6 +18,7 @@ export interface Fulfilment {
   street: string;
   postcode: string;
   door: string;
+  city: string;
   note: string;
 }
 
@@ -28,6 +29,7 @@ const emptyFulfilment: Fulfilment = {
   street: "",
   postcode: "",
   door: "",
+  city: "",
   note: "",
 };
 

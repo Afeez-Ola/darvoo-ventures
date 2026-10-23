@@ -169,3 +169,7 @@ img { display: block; max-width: 100%; }
 .legal table { border-collapse: collapse; width: 100%; }
 .legal td { padding: 8px 6px; border-bottom: 1px solid var(--line); vertical-align: top; }
 .legal td:first-child { font-weight: 700; width: 36px; color: var(--green); }
+
+.segment.three { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.segment button:disabled { color: #a8a29e; }
+.field input[aria-invalid="true"] { border-color: var(--danger); }

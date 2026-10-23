@@ -12,10 +12,12 @@ export default function Agb() {
       <p>Mit dem Klick auf „Bezahlen“ gibst du eine verbindliche Bestellung ab. Der Vertrag kommt zustande, sobald wir die Bestellung in der Küche annehmen. Den Status siehst du jederzeit auf deiner Tracking-Seite.</p>
 
       <h2>3. Preise und Zahlung</h2>
-      <p>Alle Preise sind Endpreise in Euro. Als Kleinunternehmerin gemäß § 6 Abs. 1 Z 27 UStG weisen wir keine Umsatzsteuer aus. Für Lieferungen fällt die im Warenkorb angezeigte Liefergebühr an. Die Zahlung erfolgt bei der Bestellung online.</p>
+      <p>Alle Preise sind Endpreise in Euro. Als Kleinunternehmerin gemäß § 6 Abs. 1 Z 27 UStG weisen wir keine Umsatzsteuer aus. Für Lieferung oder Versand fallen die im Warenkorb angezeigten Kosten an. Die Zahlung erfolgt bei der Bestellung online.</p>
 
       <h2>4. Lieferung, Versand und Abholung</h2>
-      <p>Gekochte Speisen und Party-Platten liefern wir frisch in der Umgebung von Wilfersdorf (Bezirk Mistelbach) zum gewählten Zeitfenster. Ungekochte Lebensmittel (z. B. Gari, Egusi, Palmöl) versenden wir in ganz Österreich. Abholung ist jederzeit möglich: Mistelbacherstraße 31, 2193 Wilfersdorf.</p>
+      <p><strong>Lieferung in Wien:</strong> Gekochte Speisen und Party-Platten liefern wir frisch zum gewählten Zeitfenster an Adressen in Wien. Die Liefergebühr wird im Warenkorb angezeigt.</p>
+      <p><strong>Versand in ganz Österreich:</strong> Ungekochte Lebensmittel (z. B. Gari, Egusi, Palmöl) versenden wir als Paket an Adressen in Österreich. Gekochte Speisen werden nicht verschickt. Die Versandkosten und die Versanddauer werden im Warenkorb angezeigt. Sobald das Paket unterwegs ist, erhältst du die Sendungsnummer auf deiner Tracking-Seite.</p>
+      <p><strong>Abholung:</strong> zum gewählten Zeitfenster in der Mistelbacherstraße 31, 2193 Wilfersdorf.</p>
 
       <h2>5. Event-Catering und Party-Platten</h2>
       <p>Party-Platten werden auf Bestellung frisch zubereitet. Bitte bestelle mindestens 7 Tage vor dem Termin. Eine Stornierung ist bis 3 Tage vor dem Termin kostenlos. Danach wird der volle Preis verrechnet, weil die Zutaten bereits eingekauft und vorbereitet sind.</p>

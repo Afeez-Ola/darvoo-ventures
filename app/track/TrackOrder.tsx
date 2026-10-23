@@ -2,22 +2,26 @@
 
 import { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
-import { Dict, useI18n } from "@/lib/i18n";
+import { Dict, fill, useI18n } from "@/lib/i18n";
 import { supabaseBrowser } from "@/lib/supabase";
 import { clock, dayLabel, euro, hhmm } from "@/lib/format";
-import type { OrderStatus, TrackedOrder } from "@/lib/types";
+import type { Mode, OrderStatus, TrackedOrder } from "@/lib/types";
 import PageBar from "@/components/PageBar";
 import { Back, Chat, Check, Phone } from "@/components/Icons";
 
 const UUID = /^[0-9a-f-]{36}$/i;
 
-function stepsFor(mode: "delivery" | "pickup"): OrderStatus[] {
+function stepsFor(mode: Mode): OrderStatus[] {
+  if (mode === "shipping") return ["received", "cooking", "out_for_delivery", "completed"];
   return mode === "delivery"
     ? ["received", "cooking", "ready", "out_for_delivery", "completed"]
     : ["received", "cooking", "ready", "completed"];
 }
 
-function label(t: Dict, s: OrderStatus, mode: "delivery" | "pickup") {
+function label(t: Dict, s: OrderStatus, mode: Mode) {
+  if (mode === "shipping" && (s === "cooking" || s === "ready")) return t.st_ship_cooking;
+  if (mode === "shipping" && s === "out_for_delivery") return t.st_ship_out_for_delivery;
+  if (mode === "shipping" && s === "completed") return t.st_ship_completed;
   if (mode === "pickup" && s === "ready") return t.st_ready_pickup;
   if (mode === "pickup" && s === "completed") return t.st_completed_pickup;
   return t[("st_" + s) as keyof Dict];
@@ -55,7 +59,21 @@ export default function TrackOrder({ token }: { token: string }) {
 
   const steps = stepsFor(order.mode);
   const cancelled = order.status === "cancelled";
-  const current = Math.max(0, steps.indexOf(order.status));
+  // a parcel marked "ready" sits on the packing step
+  const status = order.mode === "shipping" && order.status === "ready" ? "cooking" : order.status;
+  const current = Math.max(0, steps.indexOf(status));
+  const isShip = order.mode === "shipping";
+  const city = order.city ?? "";
+  const headline = isShip
+    ? order.status === "completed"
+      ? fill(t.shipHeadlineDone, { city })
+      : order.status === "out_for_delivery"
+        ? fill(t.shipHeadlineOnWay, { city })
+        : fill(t.shipHeadlineWaiting, { n: order.dispatch_days })
+    : `${order.mode === "delivery" ? t.arriving : t.readyAround} ${hhmm(order.slot_time ?? "")}`;
+  const intro = isShip
+    ? t.shipIntro
+    : `${order.slot_date ? dayLabel(order.slot_date, lang) : ""} · ${order.mode === "delivery" ? t.trackIntroDelivery : t.trackIntroPickup}`;
   const done = order.status === "completed";
   const eventAt = (s: OrderStatus) => order.events.filter((e) => e.status === s).pop()?.at;
   const progress = done ? 100 : Math.round(((current + 0.5) / steps.length) * 100);
@@ -72,12 +90,8 @@ export default function TrackOrder({ token }: { token: string }) {
         <span className="eyebrow">
           {cancelled ? t.st_cancelled : `${t.step} ${current + 1} ${t.of} ${steps.length} · ${label(t, order.status, order.mode)}`}
         </span>
-        <h1 className="display">
-          {order.mode === "delivery" ? t.arriving : t.readyAround} {hhmm(order.slot_time)}
-        </h1>
-        <p>
-          {dayLabel(order.slot_date, lang)} · {order.mode === "delivery" ? t.trackIntroDelivery : t.trackIntroPickup}
-        </p>
+        <h1 className="display">{headline}</h1>
+        <p>{intro}</p>
         <div className="progress" aria-hidden="true"><div style={{ width: cancelled ? "0%" : progress + "%" }} /></div>
       </section>
 
@@ -103,6 +117,17 @@ export default function TrackOrder({ token }: { token: string }) {
         </ol>
       )}
 
+      {isShip && order.tracking_code && (
+        <section className="order-box" style={{ marginTop: 8 }}>
+          <h2>{t.trackingNumber}</h2>
+          <div className="sumrow" style={{ alignItems: "center" }}>
+            <strong style={{ fontSize: 16, letterSpacing: 0.5 }}>{order.tracking_code}</strong>
+            <a href={`https://www.post.at/s/sendungssuche?snr=${encodeURIComponent(order.tracking_code)}`} target="_blank" rel="noopener"
+              style={{ fontWeight: 700 }}>{t.trackParcel}</a>
+          </div>
+        </section>
+      )}
+
       <section className="contact" style={{ paddingTop: cancelled ? 22 : 8 }}>
         <a href="tel:+436764022539" className="outline"><Phone /> {t.callUs}</a>
         <a href="https://wa.me/436764022539" className="outline" target="_blank" rel="noopener"><Chat /> WhatsApp</a>
@@ -113,7 +138,7 @@ export default function TrackOrder({ token }: { token: string }) {
         {order.items.map((i, k) => (
           <div className="sumrow" key={k}><span>{i.qty}× {i.name}</span><span>{euro(i.qty * i.unit_price_cents)}</span></div>
         ))}
-        {order.fee_cents > 0 && <div className="sumrow" style={{ color: "var(--muted)" }}><span>{t.deliveryFee}</span><span>{euro(order.fee_cents)}</span></div>}
+        {order.fee_cents > 0 && <div className="sumrow" style={{ color: "var(--muted)" }}><span>{isShip ? t.shippingFee : t.deliveryFee}</span><span>{euro(order.fee_cents)}</span></div>}
         <div className="sumrow total"><span>{order.paid ? t.paidWith : t.st_pending_payment}</span><span>{euro(order.total_cents)}</span></div>
       </section>
 

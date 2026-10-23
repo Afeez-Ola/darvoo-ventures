@@ -3,11 +3,12 @@
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useI18n } from "@/lib/i18n";
+import { fill, useI18n } from "@/lib/i18n";
 import { useCart } from "@/lib/cart";
 import { supabaseBrowser } from "@/lib/supabase";
 import { dayLabel, euro, hhmm, viennaToday } from "@/lib/format";
-import type { Settings, Slot } from "@/lib/types";
+import type { Category, Settings, Slot } from "@/lib/types";
+import { feeFor, SETTINGS_COLS } from "@/lib/fees";
 import PageBar from "@/components/PageBar";
 import { Minus, Pin, Plus } from "@/components/Icons";
 
@@ -18,21 +19,33 @@ export default function BasketPage() {
   const f = cart.fulfilment;
   const [settings, setSettings] = useState<Settings | null>(null);
   const [slots, setSlots] = useState<Slot[] | null>(null);
+  const [categories, setCategories] = useState<Record<string, Category> | null>(null);
 
   useEffect(() => {
-    supabaseBrowser()
-      .from("settings")
-      .select("accepting_orders,delivery_fee_cents,booking_days,same_day_cutoff")
-      .single()
+    supabaseBrowser().from("settings").select(SETTINGS_COLS).single()
       .then(({ data }) => setSettings(data as Settings));
   }, []);
+
+  // which basket items are food stuffs (only those can be posted)
+  const ids = cart.lines.map((l) => l.product_id).sort().join(",");
+  useEffect(() => {
+    if (!ids) return setCategories({});
+    supabaseBrowser().from("products").select("id,category").in("id", ids.split(","))
+      .then(({ data }) => setCategories(Object.fromEntries((data ?? []).map((p) => [p.id, p.category as Category]))));
+  }, [ids]);
+  const canShip = !!categories && cart.lines.length > 0 && cart.lines.every((l) => categories[l.product_id] === "groceries");
+
+  // a basket with cooked food cannot stay on shipping
+  useEffect(() => {
+    if (categories && f.mode === "shipping" && !canShip) cart.setFulfilment({ mode: "delivery" });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [categories, canShip]);
 
   const days = useMemo(() => {
     const n = settings?.booking_days ?? 7;
     return Array.from({ length: n + 1 }, (_, i) => viennaToday(i));
   }, [settings]);
 
-  // default to today, and drop a stale date from an old visit
   useEffect(() => {
     if (!days.length) return;
     if (!f.slot_date || !days.includes(f.slot_date)) cart.setFulfilment({ slot_date: days[0], slot_time: null });
@@ -52,10 +65,19 @@ export default function BasketPage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [f.slot_date]);
 
-  const fee = f.mode === "delivery" ? settings?.delivery_fee_cents ?? 0 : 0;
-  const addressOk = f.mode === "pickup" || (f.street.trim() !== "" && f.postcode.trim() !== "");
-  const canContinue = cart.count > 0 && !!f.slot_date && !!f.slot_time && addressOk && settings?.accepting_orders !== false;
+  const isShip = f.mode === "shipping";
+  const fee = feeFor(f.mode, settings, cart.subtotal);
+  const pc = f.postcode.trim();
+  const pcValid = /^[1-9][0-9]{3}$/.test(pc);
+  const inVienna = !!settings && settings.delivery_postcode_prefixes.some((p) => pc.startsWith(p));
+  const outside = f.mode === "delivery" && pcValid && !inVienna;
+  const addressOk =
+    f.mode === "pickup" ||
+    (f.street.trim() !== "" && pcValid && (isShip ? f.city.trim() !== "" : inVienna));
+  const timeOk = isShip || (!!f.slot_date && !!f.slot_time);
+  const canContinue = cart.count > 0 && timeOk && addressOk && settings?.accepting_orders !== false;
   const openSlots = (slots ?? []).filter((s) => s.open);
+  const feeLabel = f.mode === "delivery" ? t.deliveryFee : isShip ? t.shippingFee : t.pickup;
 
   if (cart.ready && cart.count === 0) {
     return (
@@ -95,66 +117,91 @@ export default function BasketPage() {
 
       <section className="section">
         <h2>{t.howWant}</h2>
-        <div className="segment">
+        <div className="segment three">
           <button aria-pressed={f.mode === "delivery"} onClick={() => cart.setFulfilment({ mode: "delivery" })}>{t.delivery}</button>
           <button aria-pressed={f.mode === "pickup"} onClick={() => cart.setFulfilment({ mode: "pickup" })}>{t.pickup}</button>
+          <button aria-pressed={isShip} disabled={!canShip} onClick={() => cart.setFulfilment({ mode: "shipping" })}>{t.shipping}</button>
         </div>
-      </section>
-
-      <section className="section">
-        <h2>{t.chooseDay}</h2>
-        <div className="days">
-          {days.map((d) => (
-            <button key={d} className="day" aria-pressed={f.slot_date === d} onClick={() => cart.setFulfilment({ slot_date: d, slot_time: null })}>
-              {dayLabel(d, lang)}
-            </button>
-          ))}
-        </div>
-        <h2 style={{ marginTop: 8 }}>{t.chooseTime}</h2>
-        {slots === null ? (
-          <p className="hint">…</p>
-        ) : openSlots.length === 0 ? (
-          <p className="hint">{t.noSlots}</p>
-        ) : (
-          <div className="slots">
-            {slots.map((s) => {
-              const label = !s.open ? (s.remaining === 0 ? t.full : t.closed) : s.remaining <= 1 ? t.lastSpot : t.open;
-              return (
-                <button key={s.slot_time} className="slot" disabled={!s.open}
-                  aria-pressed={f.slot_time === s.slot_time}
-                  onClick={() => cart.setFulfilment({ slot_time: s.slot_time })}>
-                  <strong>{hhmm(s.slot_time)}</strong>
-                  <small>{label}</small>
-                </button>
-              );
-            })}
+        {categories && !canShip && <p className="hint">{t.shipOnlyGroceries}</p>}
+        {isShip && settings && (
+          <div className="notice green" style={{ margin: 0 }}>
+            {fill(t.shipNote, { n: settings.ship_dispatch_days })}
+            {settings.free_shipping_from_cents != null && <> {fill(t.freeShipFrom, { x: euro(settings.free_shipping_from_cents) })}.</>}
           </div>
         )}
-        <p className="hint">{t.slotsNote}</p>
       </section>
 
-      {f.mode === "delivery" ? (
-        <section className="section" aria-label={t.deliveryAddress}>
-          <h2>{t.deliveryAddress}</h2>
-          <label className="field">{t.street}
-            <input value={f.street} autoComplete="street-address" onChange={(e) => cart.setFulfilment({ street: e.target.value })} />
-          </label>
-          <div className="two">
-            <label className="field">{t.postcode}
-              <input value={f.postcode} inputMode="numeric" autoComplete="postal-code" onChange={(e) => cart.setFulfilment({ postcode: e.target.value })} />
-            </label>
-            <label className="field">{t.door}
-              <input value={f.door} onChange={(e) => cart.setFulfilment({ door: e.target.value })} />
-            </label>
+      {!isShip && (
+        <section className="section">
+          <h2>{t.chooseDay}</h2>
+          <div className="days">
+            {days.map((d) => (
+              <button key={d} className="day" aria-pressed={f.slot_date === d} onClick={() => cart.setFulfilment({ slot_date: d, slot_time: null })}>
+                {dayLabel(d, lang)}
+              </button>
+            ))}
           </div>
+          <h2 style={{ marginTop: 8 }}>{t.chooseTime}</h2>
+          {slots === null ? (
+            <p className="hint">…</p>
+          ) : openSlots.length === 0 ? (
+            <p className="hint">{t.noSlots}</p>
+          ) : (
+            <div className="slots">
+              {slots.map((s) => {
+                const label = !s.open ? (s.remaining === 0 ? t.full : t.closed) : s.remaining <= 1 ? t.lastSpot : t.open;
+                return (
+                  <button key={s.slot_time} className="slot" disabled={!s.open}
+                    aria-pressed={f.slot_time === s.slot_time}
+                    onClick={() => cart.setFulfilment({ slot_time: s.slot_time })}>
+                    <strong>{hhmm(s.slot_time)}</strong>
+                    <small>{label}</small>
+                  </button>
+                );
+              })}
+            </div>
+          )}
+          <p className="hint">{t.slotsNote}</p>
         </section>
-      ) : (
+      )}
+
+      {f.mode === "pickup" ? (
         <section className="pickup-card">
           <span style={{ color: "var(--green)" }}><Pin /></span>
           <div style={{ display: "flex", flexDirection: "column", gap: 3 }}>
             <strong style={{ fontSize: 15 }}>{t.pickupTitle}</strong>
             <span style={{ fontSize: 13, lineHeight: "18px", color: "var(--ink-2)" }}>{t.pickupAddress}</span>
           </div>
+        </section>
+      ) : (
+        <section className="section" aria-label={isShip ? t.shipAddress : t.deliveryAddress}>
+          <h2>{isShip ? t.shipAddress : t.deliveryAddress}</h2>
+          {!isShip && <p className="hint" style={{ marginTop: -6 }}>{t.deliveryAreaNote}</p>}
+          <label className="field">{t.street}
+            <input value={f.street} autoComplete="street-address" onChange={(e) => cart.setFulfilment({ street: e.target.value })} />
+          </label>
+          <div className="two">
+            <label className="field">{t.postcode}
+              <input value={f.postcode} inputMode="numeric" maxLength={4} autoComplete="postal-code"
+                aria-invalid={outside || (pc.length >= 4 && !pcValid)}
+                onChange={(e) => cart.setFulfilment({ postcode: e.target.value.replace(/\D/g, "") })} />
+            </label>
+            {isShip ? (
+              <label className="field">{t.city}
+                <input value={f.city} autoComplete="address-level2" onChange={(e) => cart.setFulfilment({ city: e.target.value })} />
+              </label>
+            ) : (
+              <label className="field">{t.door}
+                <input value={f.door} onChange={(e) => cart.setFulfilment({ door: e.target.value })} />
+              </label>
+            )}
+          </div>
+          {isShip && (
+            <label className="field">{t.door}
+              <input value={f.door} onChange={(e) => cart.setFulfilment({ door: e.target.value })} />
+            </label>
+          )}
+          {outside && <p className="notice red" role="alert" style={{ margin: 0 }}>{t.outsideArea}</p>}
         </section>
       )}
 
@@ -167,9 +214,9 @@ export default function BasketPage() {
       <div className="bottombar">
         <div className="bottombar-inner">
           <div className="sumrow"><span>{t.subtotal}</span><span>{euro(cart.subtotal)}</span></div>
-          <div className="sumrow"><span>{f.mode === "delivery" ? t.deliveryFee : t.pickup}</span><span>{fee ? euro(fee) : t.free}</span></div>
+          <div className="sumrow"><span>{feeLabel}</span><span>{fee ? euro(fee) : t.free}</span></div>
           <div className="sumrow total"><span>{t.total}</span><span>{euro(cart.subtotal + fee)}</span></div>
-          <button className="primary" disabled={!canContinue} onClick={() => router.push("/checkout")}>{t.continuePay}</button>
+          <button className="primary" disabled={!canContinue} onClick={() => router.push("/checkout/")}>{t.continuePay}</button>
         </div>
       </div>
     </div>

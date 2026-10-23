@@ -1,5 +1,5 @@
 export type Category = "dishes" | "groceries" | "events";
-export type Mode = "delivery" | "pickup";
+export type Mode = "delivery" | "pickup" | "shipping";
 export type OrderStatus =
   | "pending_payment"
   | "received"
@@ -26,6 +26,10 @@ export interface Settings {
   delivery_fee_cents: number;
   booking_days: number;
   same_day_cutoff: string;
+  shipping_fee_cents: number;
+  free_shipping_from_cents: number | null;
+  ship_dispatch_days: number;
+  delivery_postcode_prefixes: string[];
 }
 
 export interface Slot {
@@ -40,8 +44,12 @@ export interface TrackedOrder {
   number: number;
   status: OrderStatus;
   mode: Mode;
-  slot_date: string;
-  slot_time: string;
+  slot_date: string | null;
+  slot_time: string | null;
+  created_at: string;
+  city: string | null;
+  tracking_code: string | null;
+  dispatch_days: number;
   customer_name: string;
   payment_method: string;
   paid: boolean;
