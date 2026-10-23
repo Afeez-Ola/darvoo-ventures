@@ -1,4 +1,9 @@
-# Cloudflare Pages: static export of the Next.js app
+# Cloudflare Workers static assets: serves the Next.js static export in ./out
+# Build command: npm run build   Deploy command: npx wrangler deploy
 name = "darvoo-ventures"
-pages_build_output_dir = "out"
 compatibility_date = "2026-10-01"
+
+[assets]
+directory = "./out"
+not_found_handling = "404-page"
+html_handling = "auto-trailing-slash"

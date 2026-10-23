@@ -56,14 +56,13 @@ Or directly in Supabase:
 
 Photos live in `public/menu/`. Add a file and put its path in `image_path`.
 
-## Deploy (Cloudflare Pages)
+## Deploy (Cloudflare Workers, static assets)
 
-The app is a fully static site (`next build` writes it to `out/`), so it runs on any static host.
+The app is a fully static site (`next build` writes it to `out/`). It is deployed as the Cloudflare Worker `darvoo-ventures`, connected to this repo; `wrangler.toml` tells it to serve `out/`.
 
-1. Cloudflare dashboard → **Workers & Pages → Create → Pages → Connect to Git** → pick `Afeez-Ola/darvoo-ventures`.
-2. Framework preset: **None**. Build command: `npm run build`. Build output directory: `out`.
-3. Save and deploy. Every push to `main` redeploys automatically.
-4. Optional: **Custom domains** → add `darvooventures.com`.
+* Build command: `npm run build`. Deploy command: `npx wrangler deploy`.
+* Every push to `main` rebuilds and redeploys automatically.
+* Live at `https://darvoo-ventures.afeezbolajiola.workers.dev`. Add `darvooventures.com` under the Worker's **Domains** tab.
 
 No environment variables are needed: the Supabase URL and publishable key are public values with defaults in `lib/supabase.ts`. Security comes from the database rules, not from hiding the key.
 
