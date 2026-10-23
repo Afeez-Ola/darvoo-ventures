@@ -1,4 +1,4 @@
-import LegalPage, { Todo } from "@/components/LegalPage";
+import LegalPage from "@/components/LegalPage";
 
 export default function Impressum() {
   return (
@@ -8,9 +8,9 @@ export default function Impressum() {
       <h2>Unternehmen</h2>
       <p>
         DarVoo Ventures International &amp; Co.<br />
-        Inhaber/in: <Todo>[Name laut Gewerbeschein]</Todo><br />
+        Inhaberin: Victoria Oluwatosin Stephen<br />
         Mistelbacherstraße 31<br />
-        <Todo>[PLZ]</Todo> Wilfersdorf, Österreich
+        2193 Wilfersdorf, Österreich
       </p>
 
       <h2>Kontakt</h2>
@@ -22,10 +22,9 @@ export default function Impressum() {
       <h2>Gewerbe</h2>
       <p>
         GISA-Zahl: 32952650<br />
-        Gewerbewortlaut: <Todo>[laut GISA-Auszug]</Todo><br />
-        Gewerbebehörde: <Todo>[zuständige Bezirkshauptmannschaft]</Todo><br />
+        Gewerbebehörde: Bezirkshauptmannschaft Mistelbach<br />
         Kammerzugehörigkeit: Wirtschaftskammer Niederösterreich<br />
-        UID-Nummer: <Todo>[falls vorhanden]</Todo><br />
+        Umsatzsteuer: Kleinunternehmerin gemäß § 6 Abs. 1 Z 27 UStG, daher keine UID-Nummer und kein Ausweis der Umsatzsteuer<br />
         Anwendbare Rechtsvorschriften: Gewerbeordnung, abrufbar unter <a href="https://www.ris.bka.gv.at" target="_blank" rel="noopener">ris.bka.gv.at</a>
       </p>
 
@@ -36,7 +35,7 @@ export default function Impressum() {
       </p>
 
       <h2>Bildnachweis</h2>
-      <p>Fotos der Gerichte: DarVoo Ventures. <Todo>[Herkunft der Produktfotos bei Lebensmitteln prüfen]</Todo></p>
+      <p>Fotos der Gerichte und des Marktstands: DarVoo Ventures.</p>
     </LegalPage>
   );
 }

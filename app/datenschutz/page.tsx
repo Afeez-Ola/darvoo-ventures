@@ -3,10 +3,10 @@ import LegalPage, { Todo } from "@/components/LegalPage";
 export default function Datenschutz() {
   return (
     <LegalPage title="Datenschutz">
-      <p><Todo>Mustertext. Bitte vor dem Start prüfen lassen.</Todo></p>
+      <p><Todo>Entwurf. Vor dem Start prüfen lassen.</Todo></p>
 
       <h2>Verantwortlich</h2>
-      <p>DarVoo Ventures International &amp; Co., Mistelbacherstraße 31, Wilfersdorf, Österreich. E-Mail: <a href="mailto:tjdammy@yahoo.com">tjdammy@yahoo.com</a>, Telefon: +43 676 4022539.</p>
+      <p>DarVoo Ventures International &amp; Co., Inhaberin Victoria Oluwatosin Stephen, Mistelbacherstraße 31, 2193 Wilfersdorf, Österreich. E-Mail: <a href="mailto:tjdammy@yahoo.com">tjdammy@yahoo.com</a>, Telefon: +43 676 4022539.</p>
 
       <h2>Welche Daten wir verarbeiten</h2>
       <p>Wenn du bestellst: Name, Handynummer, E-Mail (optional), Lieferadresse, Bestellinhalt, Zeitfenster, Notiz an die Küche und Zahlungsstatus. Kartendaten sehen wir nie; diese verarbeitet der Zahlungsanbieter.</p>
@@ -19,7 +19,8 @@ export default function Datenschutz() {
         <li>Supabase (Datenbank, Server in Frankfurt, EU)</li>
         <li>Cloudflare (Hosting der Website)</li>
         <li>WhatsApp (nur wenn du Statusmeldungen per WhatsApp wünschst)</li>
-        <li><Todo>[Zahlungsanbieter, z. B. Stripe, sobald aktiv]</Todo></li>
+        <li>Stripe Payments Europe, Ltd., Dublin, Irland (Zahlungsabwicklung; Kartendaten gehen direkt an Stripe)</li>
+        <li>Paketdienst für den Versand von Lebensmitteln (nur Name und Lieferadresse)</li>
       </ul>
 
       <h2>Speicher im Browser</h2>
