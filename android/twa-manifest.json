@@ -11,7 +11,7 @@
   "navigationDividerColor": "#0B6B34",
   "navigationDividerColorDark": "#0B6B34",
   "backgroundColor": "#0B6B34",
-  "enableNotifications": false,
+  "enableNotifications": true,
   "startUrl": "/",
   "iconUrl": "https://darvooventures.com/icons/icon-512.png",
   "maskableIconUrl": "https://darvooventures.com/icons/maskable-512.png",
@@ -20,8 +20,8 @@
     "path": "./darvoo-upload.keystore",
     "alias": "darvoo-upload"
   },
-  "appVersionName": "1.0.0",
-  "appVersionCode": 1,
+  "appVersionName": "1.0.1",
+  "appVersionCode": 2,
   "shortcuts": [
     {
       "name": "Track my order",
@@ -56,5 +56,5 @@
   "fileHandlers": [],
   "launchHandlerClientMode": "",
   "displayOverride": [],
-  "appVersion": "1.0.0"
+  "appVersion": "1.0.1"
 }

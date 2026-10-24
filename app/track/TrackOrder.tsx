@@ -87,7 +87,7 @@ export default function TrackOrder({ token }: { token: string }) {
     : `${order.slot_date ? dayLabel(order.slot_date, lang) : ""} · ${order.mode === "delivery" ? t.trackIntroDelivery : t.trackIntroPickup}`;
   const done = order.status === "completed";
   const eventAt = (s: OrderStatus) => order.events.filter((e) => e.status === s).pop()?.at;
-  const progress = done ? 100 : Math.round(((current + 0.5) / steps.length) * 100);
+  const progress = done ? 100 : order.status === "pending_payment" ? 4 : Math.round(((current + 0.5) / steps.length) * 100);
 
   return (
     <div className="shell">
@@ -134,14 +134,15 @@ export default function TrackOrder({ token }: { token: string }) {
       {!cancelled && (
         <ol className="timeline" aria-label="Order status">
           {steps.map((s, i) => {
-            const isDone = i < current || done;
-            const isNow = i === current && !done;
+            const waiting = order.status === "pending_payment"; // nothing has started until the money arrives
+            const isDone = !waiting && (i < current || done);
+            const isNow = !waiting && i === current && !done;
             const at = eventAt(s);
             return (
               <li key={s}>
                 <div className="rail">
                   <span className={`dot ${isDone ? "done" : ""} ${isNow ? "now" : ""}`}>{isDone && <Check />}</span>
-                  {i < steps.length - 1 && <span className={`rail-line ${i < current || done ? "done" : ""}`} />}
+                  {i < steps.length - 1 && <span className={`rail-line ${isDone && i < current ? "done" : ""}`} />}
                 </div>
                 <div className={`step-text ${!isDone && !isNow ? "future" : ""}`}>
                   <strong>{label(t, s, order.mode)}</strong>
