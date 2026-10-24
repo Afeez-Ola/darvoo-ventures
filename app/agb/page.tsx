@@ -9,7 +9,7 @@ export default function Agb() {
       <p>Diese Bedingungen gelten für alle Bestellungen über diese Website bei DarVoo Ventures International &amp; Co., Inhaberin Victoria Oluwatosin Stephen, Mistelbacherstraße 31, 2193 Wilfersdorf (Zweigstelle: Hauffgasse 6, 1110 Wien).</p>
 
       <h2>2. Bestellung und Vertrag</h2>
-      <p>Mit dem Klick auf „Bezahlen“ gibst du eine verbindliche Bestellung ab. Der Vertrag kommt zustande, sobald wir die Bestellung in der Küche annehmen. Den Status siehst du jederzeit auf deiner Tracking-Seite.</p>
+      <p>Mit dem Klick auf „Zahlungspflichtig bestellen“ gibst du eine verbindliche Bestellung ab. Der Vertrag kommt zustande, sobald wir die Bestellung in der Küche annehmen. Den Status siehst du jederzeit auf deiner Tracking-Seite.</p>
 
       <h2>3. Preise und Zahlung</h2>
       <p>Alle Preise sind Endpreise in Euro. Als Kleinunternehmerin gemäß § 6 Abs. 1 Z 27 UStG weisen wir keine Umsatzsteuer aus. Für Lieferung oder Versand fallen die im Warenkorb angezeigten Kosten an. Die Zahlung erfolgt per Überweisung auf das bei der Bestellung angezeigte Konto innerhalb von 24 Stunden nach der Bestellung, mit der Bestellnummer als Verwendungszweck. Wir beginnen mit der Zubereitung oder dem Versand, sobald die Zahlung eingegangen ist. Nicht fristgerecht bezahlte Bestellungen können wir stornieren. Sobald Online-Zahlung verfügbar ist, kannst du auch direkt bei der Bestellung bezahlen.</p>

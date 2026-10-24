@@ -176,7 +176,7 @@ export default function CheckoutPage() {
         <div className="bottombar-inner">
           <div className="sumrow total"><span>{t.totalVat}</span><span>{euro(total)}</span></div>
           <button className="primary" disabled={!canPay} onClick={pay}>
-            {busy ? t.placing : bankOnly ? `${t.placeOrder} · ${euro(total)}` : `${t.pay} ${euro(total)}`}
+            {busy ? t.placing : bankOnly ? t.placeOrder : t.pay}
           </button>
         </div>
       </div>

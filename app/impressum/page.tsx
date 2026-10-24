@@ -29,12 +29,6 @@ export default function Impressum() {
         Anwendbare Rechtsvorschriften: Gewerbeordnung, abrufbar unter <a href="https://www.ris.bka.gv.at" target="_blank" rel="noopener">ris.bka.gv.at</a>
       </p>
 
-      <h2>Online-Streitbeilegung</h2>
-      <p>
-        Verbraucher können Beschwerden an die Online-Streitbeilegungsplattform der EU richten:{" "}
-        <a href="https://ec.europa.eu/consumers/odr" target="_blank" rel="noopener">ec.europa.eu/consumers/odr</a>.
-      </p>
-
       <h2>Bildnachweis</h2>
       <p>Fotos der Gerichte und des Marktstands: DarVoo Ventures.</p>
     </LegalPage>
