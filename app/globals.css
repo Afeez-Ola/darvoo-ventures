@@ -267,3 +267,12 @@ img { display: block; max-width: 100%; }
   .shell-wide .brand-logo { height: 52px; }
   .shell-wide .footer-logo { grid-column: 1 / -1; }
 }
+
+/* accounts and alerts */
+.alerts-card { margin: 18px 20px 0; padding: 14px 16px; border-radius: 16px; background: var(--green-tint); display: flex; gap: 12px; align-items: flex-start; }
+.alerts-card strong { font-size: 15px; }
+.alerts-icon { width: 40px; height: 40px; flex: none; border-radius: 20px; background: #fff; color: var(--green); display: flex; align-items: center; justify-content: center; }
+.order-line { text-decoration: none; color: inherit; }
+.order-line:hover strong { color: var(--green); }
+.link-danger { background: none; border: 0; color: var(--danger); font-weight: 700; font-size: 14px; padding: 10px 0; }
+.topbar .icon-btn + .icon-btn { margin-left: 0; }

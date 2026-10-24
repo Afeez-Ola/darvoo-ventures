@@ -76,3 +76,10 @@
 .k-slot strong { width: 52px; }
 .k-x { margin-left: auto; height: 36px; padding: 0 10px; border-radius: 10px; border: 1px solid var(--line); background: #fff; color: var(--danger); font-size: 12px; font-weight: 700; }
 .k-pill.red { background: var(--danger-tint); color: var(--danger); }
+
+.k-alarm { height: 40px; padding: 0 14px; border-radius: 20px; border: 1.5px solid var(--danger); background: #fff; color: var(--danger); font-weight: 700; font-size: 13px; }
+.k-alarm.on { border-color: var(--green); color: var(--green); }
+.k-newbanner { position: sticky; top: 0; z-index: 30; display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 14px 24px; background: var(--danger); color: #fff; font-size: 16px; animation: k-pulse 1s infinite alternate; }
+.k-newbanner button { height: 40px; padding: 0 20px; border-radius: 20px; border: 0; background: #fff; color: var(--danger); font-weight: 800; font-size: 15px; }
+@keyframes k-pulse { from { background: var(--danger); } to { background: #c2410c; } }
+@media (prefers-reduced-motion: reduce) { .k-newbanner { animation: none; } }

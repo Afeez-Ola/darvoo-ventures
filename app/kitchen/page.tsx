@@ -1,7 +1,9 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import type { Session } from "@supabase/supabase-js";
+import { beep, unlockAudio } from "@/lib/alarm";
+import { enablePush } from "@/lib/push";
 import { supabaseBrowser } from "@/lib/supabase";
 import { clock, dayLabel, euro, hhmm, viennaToday } from "@/lib/format";
 import type { Mode, OrderStatus } from "@/lib/types";
@@ -174,6 +176,33 @@ function Orders({ header }: { header: React.ReactNode }) {
   const [codes, setCodes] = useState<Record<string, string>>({});
   const [day, setDay] = useState(viennaToday());
   const [live, setLive] = useState(false);
+  // new-order alarm: beep + banner until someone taps "Seen"; phone notification when the board is closed
+  const [alarmOn, setAlarmOn] = useState(false);
+  const [unseen, setUnseen] = useState<{ number: number; name: string }[]>([]);
+  const alarmRef = useRef(false);
+  useEffect(() => {
+    try { if (localStorage.getItem("darvoo-kitchen-alarm") === "1") setAlarmOn(true); } catch {}
+    // browsers allow sound only after a tap: the first tap anywhere unlocks it
+    const unlock = () => unlockAudio();
+    window.addEventListener("pointerdown", unlock, { once: true });
+    return () => window.removeEventListener("pointerdown", unlock);
+  }, []);
+  useEffect(() => { alarmRef.current = alarmOn; }, [alarmOn]);
+  useEffect(() => {
+    if (!unseen.length) { document.title = "Kitchen · Darvoo"; return; }
+    beep();
+    const id = setInterval(beep, 15000); // keep reminding until seen
+    let flip = false;
+    const t = setInterval(() => { flip = !flip; document.title = flip ? `🔔 ${unseen.length} new order${unseen.length > 1 ? "s" : ""}` : "Kitchen · Darvoo"; }, 1000);
+    return () => { clearInterval(id); clearInterval(t); };
+  }, [unseen]);
+  const turnOnAlarm = async () => {
+    unlockAudio();
+    beep();
+    setAlarmOn(true);
+    try { localStorage.setItem("darvoo-kitchen-alarm", "1"); } catch {}
+    await enablePush({ staff: true, lang: "en" });
+  };
 
   const load = useCallback(async () => {
     const since = new Date(Date.now() - 14 * 86400000).toISOString();
@@ -194,7 +223,13 @@ function Orders({ header }: { header: React.ReactNode }) {
     sb.from("settings").select("accepting_orders").single().then(({ data }) => setAccepting(data?.accepting_orders ?? true));
     const ch = sb
       .channel("kitchen-orders")
-      .on("postgres_changes", { event: "*", schema: "public", table: "orders" }, () => load())
+      .on("postgres_changes", { event: "*", schema: "public", table: "orders" }, (p) => {
+        load();
+        if (p.eventType === "INSERT" && alarmRef.current) {
+          const o = p.new as { number: number; customer_name: string };
+          setUnseen((u) => [...u, { number: o.number, name: o.customer_name }]);
+        }
+      })
       .subscribe((s) => setLive(s === "SUBSCRIBED"));
     const poll = setInterval(load, 30000);
     return () => {
@@ -248,6 +283,9 @@ function Orders({ header }: { header: React.ReactNode }) {
           <div className="k-stats">
             <span className="k-stat"><strong>{open}</strong> {day === PARCELS ? "open parcels" : `open on ${dayLabel(day, "en")}`}</span>
             {newCount > 0 && <span className="k-stat alert"><strong>{newCount}</strong> new to accept</span>}
+            {!alarmOn
+              ? <button className="k-alarm" onClick={turnOnAlarm}>🔔 Turn on new-order alarm</button>
+              : <button className="k-alarm on" onClick={() => { unlockAudio(); beep(); }} title="Tap to test the sound">🔔 Alarm on · test</button>}
             <button className={`k-pause ${accepting ? "" : "paused"}`} onClick={togglePause} aria-pressed={accepting === false}>
               {accepting ? "Accepting orders · Pause" : "Paused · Resume orders"}
             </button>
@@ -255,6 +293,12 @@ function Orders({ header }: { header: React.ReactNode }) {
         </div>
       </header>
 
+      {unseen.length > 0 && (
+        <div className="k-newbanner" role="alert">
+          <strong>New order{unseen.length > 1 ? "s" : ""}: {unseen.map((u) => `#${u.number} ${u.name}`).join(" · ")}</strong>
+          <button onClick={() => setUnseen([])}>Seen</button>
+        </div>
+      )}
       <main className="k-main">
         <div className="days" style={{ marginBottom: 18 }}>
           {days.map((d) => (

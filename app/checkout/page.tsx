@@ -30,6 +30,7 @@ export default function CheckoutPage() {
   const [whatsapp, setWhatsapp] = useState(true);
   const [terms, setTerms] = useState(false);
   const [busy, setBusy] = useState(false);
+  const [signedIn, setSignedIn] = useState(false);
   // set once the order is placed, so emptying the basket does not bounce us back to /basket
   const placedRef = useRef(false);
   const [error, setError] = useState<string | null>(null);
@@ -41,6 +42,18 @@ export default function CheckoutPage() {
       if (saved.phone) setPhone(saved.phone);
       if (saved.email) setEmail(saved.email);
     } catch {}
+    // signed-in customers: fill in from their account
+    const sbc = supabaseBrowser();
+    sbc.auth.getSession().then(async ({ data }) => {
+      const u = data.session?.user;
+      if (!u) return;
+      setSignedIn(true);
+      const { data: p } = await sbc.from("profiles").select("name,phone").eq("user_id", u.id).maybeSingle();
+      if (p?.name) setName(p.name);
+      if (p?.phone) setPhone(p.phone);
+      else if (u.phone) setPhone("+" + u.phone);
+      if (u.email) setEmail(u.email);
+    });
     supabaseBrowser().from("settings").select(SETTINGS_COLS).single()
       .then(({ data }) => {
         const st = data as Settings;
@@ -99,6 +112,15 @@ export default function CheckoutPage() {
       localStorage.setItem("darvoo-contact", JSON.stringify({ name, phone, email }));
     } catch {}
     rememberOrder(placed.public_token, placed.number);
+    if (signedIn) {
+      // keep the account's details up to date for next time
+      const { data: s } = await sb.auth.getSession();
+      if (s.session) await sb.from("profiles").upsert({
+        user_id: s.session.user.id, name, phone, lang,
+        ...(f.mode !== "pickup" ? { street: f.street, postcode: f.postcode, city: f.city || null, door: f.door || null, country: f.country || "AT" } : {}),
+        updated_at: new Date().toISOString(),
+      });
+    }
     placedRef.current = true;
     router.replace(`/track/?t=${placed.public_token}`);
     cart.clear();

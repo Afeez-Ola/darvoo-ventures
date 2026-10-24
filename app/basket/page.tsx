@@ -71,6 +71,19 @@ export default function BasketPage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [f.slot_date]);
 
+  // signed-in customers: fill an empty address from their account
+  useEffect(() => {
+    if (!cart.ready || f.street) return;
+    const sbc = supabaseBrowser();
+    sbc.auth.getSession().then(async ({ data }) => {
+      const u = data.session?.user;
+      if (!u) return;
+      const { data: p } = await sbc.from("profiles").select("street,postcode,city,door,country").eq("user_id", u.id).maybeSingle();
+      if (p?.street) cart.setFulfilment({ street: p.street, postcode: p.postcode ?? "", city: p.city ?? "", door: p.door ?? "", country: p.country ?? "AT" });
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [cart.ready]);
+
   const isShip = f.mode === "shipping";
   const cc = isShip ? f.country || "AT" : "AT";
   const fee = feeFor(f.mode, settings, cart.subtotal, f.postcode, cc);

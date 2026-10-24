@@ -7,7 +7,7 @@ import { useI18n } from "@/lib/i18n";
 import { useCart } from "@/lib/cart";
 import { euro, hhmm } from "@/lib/format";
 import type { Category, Product, Settings } from "@/lib/types";
-import { Clock, Minus, Plus, Truck } from "@/components/Icons";
+import { Clock, Minus, Plus, Truck, User } from "@/components/Icons";
 import SiteFooter from "@/components/SiteFooter";
 
 export default function MenuView({
@@ -52,6 +52,9 @@ export default function MenuView({
           </button>
           <Link href="/track" className="icon-btn" aria-label="Track your order">
             <Truck />
+          </Link>
+          <Link href="/account/" className="icon-btn" aria-label={t.account}>
+            <User />
           </Link>
         </div>
       </header>

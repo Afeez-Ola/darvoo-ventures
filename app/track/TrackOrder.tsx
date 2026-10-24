@@ -7,7 +7,9 @@ import { supabaseBrowser } from "@/lib/supabase";
 import { clock, dayLabel, euro, hhmm } from "@/lib/format";
 import type { Mode, OrderStatus, TrackedOrder } from "@/lib/types";
 import PageBar from "@/components/PageBar";
-import { Back, Chat, Check, Phone } from "@/components/Icons";
+import { Back, Bell, Chat, Check, Phone } from "@/components/Icons";
+import { enablePush, linkPushIfAllowed, pushPermission, type PushResult } from "@/lib/push";
+import { supabaseBrowser as sbForAuth } from "@/lib/supabase";
 
 const UUID = /^[0-9a-f-]{36}$/i;
 
@@ -30,6 +32,15 @@ function label(t: Dict, s: OrderStatus, mode: Mode) {
 export default function TrackOrder({ token }: { token: string }) {
   const { t, lang } = useI18n();
   const [order, setOrder] = useState<TrackedOrder | null | undefined>(undefined);
+  const [alerts, setAlerts] = useState<PushResult | "idle">("idle");
+  const [signedIn, setSignedIn] = useState<boolean | null>(null);
+  useEffect(() => {
+    if (!UUID.test(token)) return;
+    // already allowed notifications on this device: link this order silently
+    linkPushIfAllowed({ orderToken: token, lang }).then((ok) => ok && setAlerts("on"));
+    sbForAuth().auth.getSession().then(({ data }) => setSignedIn(!!data.session));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [token]);
 
   const load = useCallback(async () => {
     if (!UUID.test(token)) return setOrder(null);
@@ -151,6 +162,22 @@ export default function TrackOrder({ token }: { token: string }) {
               style={{ fontWeight: 700 }}>{t.trackParcel}</a>
           </div>
         </section>
+      )}
+
+      {!cancelled && !done && pushPermission() !== "unsupported" && (
+        <section className="alerts-card">
+          <span className="alerts-icon"><Bell size={22} /></span>
+          <div style={{ flex: 1, display: "flex", flexDirection: "column", gap: 6 }}>
+            {alerts === "on" ? <><strong>{t.alertsTitle}</strong><span className="hint">{t.trackAlertsOn}</span></>
+              : pushPermission() === "denied" || alerts === "denied" ? <><strong>{t.alertsTitle}</strong><span className="hint">{t.alertsDenied}</span></>
+              : <button className="primary" style={{ height: 44, fontSize: 15 }} onClick={async () => setAlerts(await enablePush({ orderToken: token, lang }))}>{t.trackAlerts}</button>}
+          </div>
+        </section>
+      )}
+      {signedIn === false && (
+        <p style={{ margin: "14px 20px 0", fontSize: 14 }}>
+          <Link href="/account/" style={{ fontWeight: 700 }}>{t.saveToAccount}</Link>
+        </p>
       )}
 
       <section className="contact" style={{ paddingTop: cancelled ? 22 : 8 }}>

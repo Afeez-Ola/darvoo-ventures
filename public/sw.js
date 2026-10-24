@@ -2,7 +2,7 @@
 // Pages: network first, then the last copy seen, then the offline page.
 // Static files (JS, CSS, fonts, photos, icons): served from cache, refreshed in the background.
 // Never touches Supabase (orders, prices, payments): those always go to the network.
-const VERSION = "darvoo-v2";
+const VERSION = "darvoo-v3";
 const PAGES = `${VERSION}-pages`;
 const STATIC = `${VERSION}-static`;
 const OFFLINE_URL = "/offline"; // served from offline.html (the host drops the .html)
@@ -62,4 +62,35 @@ self.addEventListener("fetch", (event) => {
       })
     );
   }
+});
+
+// Order notifications (sent by the notify-order function)
+self.addEventListener("push", (event) => {
+  let d = {};
+  try { d = event.data ? event.data.json() : {}; } catch { d = { title: "Darvoo", body: event.data && event.data.text() }; }
+  event.waitUntil(
+    self.registration.showNotification(d.title || "Darvoo", {
+      body: d.body || "",
+      icon: "/icons/icon-192.png",
+      badge: "/icons/badge-96.png",
+      tag: d.tag,
+      renotify: true,
+      requireInteraction: !!d.staff,
+      vibrate: d.staff ? [400, 150, 400, 150, 400] : [200, 100, 200],
+      data: { url: d.url || "/" },
+    })
+  );
+});
+
+self.addEventListener("notificationclick", (event) => {
+  event.notification.close();
+  const url = new URL((event.notification.data && event.notification.data.url) || "/", self.location.origin).href;
+  event.waitUntil(
+    self.clients.matchAll({ type: "window", includeUncontrolled: true }).then((list) => {
+      for (const c of list) {
+        if ("focus" in c) { c.navigate(url); return c.focus(); }
+      }
+      return self.clients.openWindow(url);
+    })
+  );
 });
