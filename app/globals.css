@@ -276,3 +276,17 @@ img { display: block; max-width: 100%; }
 .order-line:hover strong { color: var(--green); }
 .link-danger { background: none; border: 0; color: var(--danger); font-weight: 700; font-size: 14px; padding: 10px 0; }
 .topbar .icon-btn + .icon-btn { margin-left: 0; }
+
+/* thank-you page */
+.ty-hero { margin: 24px 20px 0; padding: 28px 20px 24px; border-radius: 22px; background: var(--green); color: #fff; display: flex; flex-direction: column; align-items: center; text-align: center; gap: 8px; }
+.ty-hero h1 { margin: 6px 0 0; font-size: 30px; line-height: 34px; }
+.ty-hero p { margin: 0; font-size: 15px; line-height: 21px; color: #dcebe1; }
+.ty-check { width: 64px; height: 64px; border-radius: 32px; background: var(--gold); color: var(--green); display: flex; align-items: center; justify-content: center; animation: ty-pop .5s ease-out; }
+@keyframes ty-pop { from { transform: scale(.4); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+@media (prefers-reduced-motion: reduce) { .ty-check { animation: none; } }
+.ty-steps { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 12px; }
+.ty-steps li { display: flex; gap: 12px; align-items: flex-start; font-size: 15px; line-height: 21px; }
+.ty-num { width: 28px; height: 28px; flex: none; border-radius: 14px; background: var(--green-tint); color: var(--green); font-weight: 800; font-size: 14px; display: flex; align-items: center; justify-content: center; }
+.ty-done { margin: 18px 20px 0; padding: 18px; border-radius: 18px; background: var(--gold-tint); border: 1.5px solid var(--gold); display: flex; flex-direction: column; gap: 8px; }
+.ty-done h2 { margin: 0; font-size: 18px; }
+.ty-done p { margin: 0; font-size: 14px; line-height: 20px; color: var(--ink-2); }

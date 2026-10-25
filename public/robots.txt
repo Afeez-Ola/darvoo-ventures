@@ -3,6 +3,8 @@ Allow: /
 Disallow: /kitchen/
 Disallow: /track/
 Disallow: /checkout/
+Disallow: /thank-you/
+Disallow: /account/
 Disallow: /basket/
 
 Sitemap: https://darvooventures.com/sitemap.xml

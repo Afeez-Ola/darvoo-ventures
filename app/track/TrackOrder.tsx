@@ -7,8 +7,9 @@ import { supabaseBrowser } from "@/lib/supabase";
 import { clock, dayLabel, euro, hhmm } from "@/lib/format";
 import type { Mode, OrderStatus, TrackedOrder } from "@/lib/types";
 import PageBar from "@/components/PageBar";
-import { Back, Bell, Chat, Check, Phone } from "@/components/Icons";
-import { enablePush, linkPushIfAllowed, pushPermission, type PushResult } from "@/lib/push";
+import { Back, Chat, Check, Phone } from "@/components/Icons";
+import BankBox from "@/components/BankBox";
+import OrderAlerts from "@/components/OrderAlerts";
 import { supabaseBrowser as sbForAuth } from "@/lib/supabase";
 
 const UUID = /^[0-9a-f-]{36}$/i;
@@ -32,12 +33,9 @@ function label(t: Dict, s: OrderStatus, mode: Mode) {
 export default function TrackOrder({ token }: { token: string }) {
   const { t, lang } = useI18n();
   const [order, setOrder] = useState<TrackedOrder | null | undefined>(undefined);
-  const [alerts, setAlerts] = useState<PushResult | "idle">("idle");
   const [signedIn, setSignedIn] = useState<boolean | null>(null);
   useEffect(() => {
     if (!UUID.test(token)) return;
-    // already allowed notifications on this device: link this order silently
-    linkPushIfAllowed({ orderToken: token, lang }).then((ok) => ok && setAlerts("on"));
     sbForAuth().auth.getSession().then(({ data }) => setSignedIn(!!data.session));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [token]);
@@ -106,30 +104,7 @@ export default function TrackOrder({ token }: { token: string }) {
         <div className="progress" aria-hidden="true"><div style={{ width: cancelled ? "0%" : progress + "%" }} /></div>
       </section>
 
-      {order.status === "pending_payment" && order.bank && (
-        <section className="bank-box" aria-label={t.bankTitle}>
-          <h2>{t.bankTitle}</h2>
-          <p>{fill(t.bankIntro, { x: euro(order.total_cents), by: `${dayLabel(new Date(order.bank.pay_by).toLocaleDateString("en-CA", { timeZone: "Europe/Vienna" }), lang)} ${clock(order.bank.pay_by)}` })}</p>
-          <dl>
-            {([
-              [t.bankHolder, order.bank.holder],
-              ["IBAN", order.bank.iban],
-              ["BIC", `${order.bank.bic} (${order.bank.bank})`],
-              [t.bankAmount, euro(order.total_cents)],
-              [t.bankReference, order.bank.reference],
-            ] as [string, string][]).map(([k, v]) => (
-              <div key={k}>
-                <dt>{k}</dt>
-                <dd>
-                  <span>{v}</span>
-                  <button type="button" className="copy-btn" onClick={() => navigator.clipboard?.writeText(k === "IBAN" ? v.replace(/\s/g, "") : k === t.bankAmount ? (order.total_cents / 100).toFixed(2) : v.split(" (")[0])}>{t.copy}</button>
-                </dd>
-              </div>
-            ))}
-          </dl>
-          <p className="small">{t.bankAfter}</p>
-        </section>
-      )}
+      <BankBox order={order} />
 
       {!cancelled && (
         <ol className="timeline" aria-label="Order status">
@@ -165,16 +140,15 @@ export default function TrackOrder({ token }: { token: string }) {
         </section>
       )}
 
-      {!cancelled && !done && pushPermission() !== "unsupported" && (
-        <section className="alerts-card">
-          <span className="alerts-icon"><Bell size={22} /></span>
-          <div style={{ flex: 1, display: "flex", flexDirection: "column", gap: 6 }}>
-            {alerts === "on" ? <><strong>{t.alertsTitle}</strong><span className="hint">{t.trackAlertsOn}</span></>
-              : pushPermission() === "denied" || alerts === "denied" ? <><strong>{t.alertsTitle}</strong><span className="hint">{t.alertsDenied}</span></>
-              : <button className="primary" style={{ height: 44, fontSize: 15 }} onClick={async () => setAlerts(await enablePush({ orderToken: token, lang }))}>{t.trackAlerts}</button>}
-          </div>
+      {done && (
+        <section className="ty-done">
+          <h2>{t.tyDoneTitle}</h2>
+          <p>{t.tyDoneText}</p>
+          <a className="outline" style={{ height: 46, marginTop: 4 }} target="_blank" rel="noopener"
+            href={`https://wa.me/436764022539?text=${encodeURIComponent(fill(t.tyFeedbackMsg, { n: order.number }))}`}>{t.tyFeedback}</a>
         </section>
       )}
+      {!cancelled && !done && <OrderAlerts token={token} />}
       {signedIn === false && (
         <p style={{ margin: "14px 20px 0", fontSize: 14 }}>
           <Link href="/account/" style={{ fontWeight: 700 }}>{t.saveToAccount}</Link>

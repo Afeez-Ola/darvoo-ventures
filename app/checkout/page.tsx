@@ -122,7 +122,7 @@ export default function CheckoutPage() {
       });
     }
     placedRef.current = true;
-    router.replace(`/track/?t=${placed.public_token}`);
+    router.replace(`/thank-you/?t=${placed.public_token}`);
     cart.clear();
   }
 
