@@ -89,7 +89,8 @@ async function push(rows: { id: string; endpoint: string; p256dh: string; auth: 
 }
 
 async function email(o: Order, bank: Record<string, string> | null) {
-  const key = Deno.env.get("RESEND_API_KEY");
+  // the Resend key may be saved as RESEND_API_KEY or under the name "Darvoo"
+  const key = Deno.env.get("RESEND_API_KEY") ?? Deno.env.get("Darvoo") ?? Deno.env.get("DARVOO");
   if (!key || !o.email) return "skipped";
   if (o.user_id) {
     const { data: p } = await sb.from("profiles").select("email_updates").eq("user_id", o.user_id).maybeSingle();

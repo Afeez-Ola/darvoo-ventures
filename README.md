@@ -92,6 +92,6 @@ SQL for a fresh project is in `supabase/migrations/`. Apply them in order (`0001
 
 * Customers can order as guests or sign in. `orders.user_id` links an order to an account; customers can only read their own orders (row level security). `claim_orders()` attaches earlier guest orders placed on the same phone or with the same verified email or phone.
 * `delete_my_account()` removes the login, profile and push subscriptions; orders stay, unlinked, for the tax retention period.
-* Every new order and status change fires the `orders_notify` trigger, which calls the `notify-order` edge function. It sends web push to the customer (account devices and guests who tapped "Get alerts"), web push to the kitchen for new orders, and an email when `RESEND_API_KEY` is set as an edge function secret.
+* Every new order and status change fires the `orders_notify` trigger, which calls the `notify-order` edge function. It sends web push to the customer (account devices and guests who tapped "Get alerts"), web push to the kitchen for new orders, and an email when the Resend key is set as an edge function secret (named `RESEND_API_KEY` or `Darvoo`).
 * Push keys and the trigger secret live in Supabase Vault; nothing secret is in this repo.
 * Kitchen: "Turn on new-order alarm" beeps and shows a red banner for each new order until someone taps "Seen", and registers the device for kitchen push.
