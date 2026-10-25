@@ -79,10 +79,14 @@ export default function TrackOrder({ token }: { token: string }) {
       : order.status === "out_for_delivery"
         ? fill(t.shipHeadlineOnWay, { city })
         : fill(t.shipHeadlineWaiting, { n: order.dispatch_days })
-    : `${order.mode === "delivery" ? t.arriving : t.readyAround} ${hhmm(order.slot_time ?? "")}`;
+    : order.status === "completed"
+      ? label(t, order.status, order.mode)
+      : `${order.mode === "delivery" ? t.arriving : t.readyAround} ${hhmm(order.slot_time ?? "")}`;
   const intro = isShip
     ? t.shipIntro
-    : `${order.slot_date ? dayLabel(order.slot_date, lang) : ""} · ${order.mode === "delivery" ? t.trackIntroDelivery : t.trackIntroPickup}`;
+    : order.status === "completed"
+      ? `${order.slot_date ? dayLabel(order.slot_date, lang) : ""} · ${t.tyDoneTitle}`
+      : `${order.slot_date ? dayLabel(order.slot_date, lang) : ""} · ${order.mode === "delivery" ? t.trackIntroDelivery : t.trackIntroPickup}`;
   const done = order.status === "completed";
   const eventAt = (s: OrderStatus) => order.events.filter((e) => e.status === s).pop()?.at;
   const progress = done ? 100 : order.status === "pending_payment" ? 4 : Math.round(((current + 0.5) / steps.length) * 100);
