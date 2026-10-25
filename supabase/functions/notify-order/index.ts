@@ -122,7 +122,7 @@ async function email(o: Order, bank: Record<string, string> | null) {
       subject: `${de.title} · ${en.title}`, html,
     }),
   });
-  return res.ok ? "sent" : `error ${res.status}`;
+  return res.ok ? "sent" : `error ${res.status}: ${(await res.text()).slice(0, 160)}`;
 }
 
 Deno.serve(async (req) => {
