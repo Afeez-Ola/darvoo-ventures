@@ -45,6 +45,17 @@ const COLUMNS: { status: OrderStatus; title: string; tone: string }[] = [
 
 const PARCELS = "parcels";
 
+/** Bank transfer deadline, same rule as public.pay_by(): 24 h after ordering, but at least 2 h before the slot. */
+function payBy(o: KOrder) {
+  const d24 = Date.parse(o.created_at) + 24 * 3600e3;
+  if (!o.slot_date || !o.slot_time) return d24;
+  // slot is Vienna local time; find its UTC instant via the Vienna offset on that day
+  const guess = Date.parse(`${o.slot_date}T${o.slot_time.slice(0, 5)}:00Z`);
+  const vienna = new Date(new Date(guess).toLocaleString("en-US", { timeZone: "Europe/Vienna" })).getTime();
+  const utc = new Date(new Date(guess).toLocaleString("en-US", { timeZone: "UTC" })).getTime();
+  return Math.min(d24, guess - (vienna - utc) - 2 * 3600e3);
+}
+
 function nextStep(o: KOrder): { to: OrderStatus; label: string } | null {
   if (o.status === "pending_payment") return { to: "received", label: "Money arrived: mark paid" };
   if (o.mode === "shipping") {
@@ -360,8 +371,8 @@ function Orders({ header }: { header: React.ReactNode }) {
                         <button className="k-btn" disabled={busyId === o.id} onClick={() => advance(o, step.to)}>{step.label}</button>
                       )}
                       {o.status === "pending_payment" && (
-                        <span className={`k-pill ${Date.now() - Date.parse(o.created_at) > 24 * 3600e3 ? "red" : "gold"}`}>
-                          {Date.now() - Date.parse(o.created_at) > 24 * 3600e3 ? "Transfer overdue" : `Pay by ${clock(new Date(Date.parse(o.created_at) + 24 * 3600e3).toISOString())}`} · ref Darvoo {o.number}
+                        <span className={`k-pill ${Date.now() > payBy(o) ? "red" : "gold"}`}>
+                          {Date.now() > payBy(o) ? "Transfer overdue" : `Pay by ${dayLabel(new Date(payBy(o)).toLocaleDateString("en-CA", { timeZone: "Europe/Vienna" }), "en")} ${clock(new Date(payBy(o)).toISOString())}`} · ref Darvoo {o.number}
                         </span>
                       )}
                       {(o.status === "received" || o.status === "pending_payment") && (

@@ -35,7 +35,11 @@ type Order = {
 const esc = (t: string) => t.replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]!));
 const euro = (c: number) => "€" + (c / 100).toFixed(2).replace(".", ",");
 
-function message(o: Order, lang: Lang): { title: string; body: string } | null {
+// payment deadline in Vienna time, e.g. "Mo., 26. Okt., 10:00"
+const when = (iso: string, lang: Lang) => new Date(iso).toLocaleString(lang === "de" ? "de-AT" : "en-GB",
+  { timeZone: "Europe/Vienna", weekday: "short", day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" });
+
+function message(o: Order, lang: Lang, payBy?: string | null): { title: string; body: string } | null {
   const n = `#${o.number}`;
   const de = lang === "de";
   const ship = o.mode === "shipping";
@@ -43,7 +47,8 @@ function message(o: Order, lang: Lang): { title: string; body: string } | null {
     case "pending_payment":
       return o.payment_method === "bank_transfer"
         ? { title: de ? `Bestellung ${n} erhalten` : `Order ${n} received`,
-            body: de ? `Bitte überweise ${euro(o.total_cents)} innerhalb von 24 Stunden. Bankdaten in der App.` : `Please transfer ${euro(o.total_cents)} within 24 hours. Bank details in the app.` }
+            body: de ? `Bitte überweise ${euro(o.total_cents)} bis ${payBy ? when(payBy, lang) : "spätestens 24 Stunden nach der Bestellung"}. Bankdaten in der App.`
+                     : `Please transfer ${euro(o.total_cents)} by ${payBy ? when(payBy, lang) : "24 hours after ordering"}. Bank details in the app.` }
         : null;
     case "received":
       return { title: de ? `Bestellung ${n} bestätigt` : `Order ${n} confirmed`,
@@ -96,7 +101,7 @@ async function email(o: Order, bank: Record<string, string> | null) {
     const { data: p } = await sb.from("profiles").select("email_updates").eq("user_id", o.user_id).maybeSingle();
     if (p && p.email_updates === false) return "opted-out";
   }
-  const de = message(o, "de"), en = message(o, "en");
+  const de = message(o, "de", bank?.pay_by), en = message(o, "en", bank?.pay_by);
   if (!de || !en) return "no-message";
   const link = `${SITE}/track/?t=${o.public_token}`;
   const bankHtml = bank && o.status === "pending_payment"
@@ -139,6 +144,12 @@ Deno.serve(async (req) => {
   if (!o) return new Response("no order", { status: 404 });
 
   const result: Record<string, unknown> = {};
+  // the deadline shown to the customer (same rule as the tracking page)
+  let payBy: string | null = null;
+  if (o.status === "pending_payment") {
+    const { data: g } = await sb.rpc("get_order", { p_token: o.public_token });
+    payBy = (g as { bank?: { pay_by?: string } } | null)?.bank?.pay_by ?? null;
+  }
   const link = `/track/?t=${o.public_token}`;
 
   // customer push: their account's devices, plus devices that asked for alerts on this order
@@ -148,7 +159,7 @@ Deno.serve(async (req) => {
   const customerSubs = (subs ?? []).filter((s) => !s.is_staff);
   let sent = 0;
   for (const lang of ["en", "de"] as Lang[]) {
-    const m = message(o, lang);
+    const m = message(o, lang, payBy);
     const rows = customerSubs.filter((s) => (s.lang === "de" ? "de" : "en") === lang);
     if (m && rows.length) sent += await push(rows, { ...m, url: link, tag: `order-${o.number}` });
   }
@@ -169,7 +180,7 @@ Deno.serve(async (req) => {
   let bank: Record<string, string> | null = null;
   if (o.status === "pending_payment") {
     const { data: s } = await sb.from("settings").select("bank_holder,bank_iban,bank_bic,bank_name").eq("id", 1).single();
-    if (s) bank = { holder: s.bank_holder, iban: s.bank_iban, bic: s.bank_bic, bank: s.bank_name };
+    if (s) bank = { holder: s.bank_holder, iban: s.bank_iban, bic: s.bank_bic, bank: s.bank_name, pay_by: payBy ?? "" };
   }
   result.email = await email(o, bank);
   return Response.json(result);

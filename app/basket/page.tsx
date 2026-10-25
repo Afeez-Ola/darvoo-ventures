@@ -49,7 +49,9 @@ export default function BasketPage() {
 
   const days = useMemo(() => {
     const n = settings?.booking_days ?? 7;
-    return Array.from({ length: n + 1 }, (_, i) => viennaToday(i));
+    // bank transfer only: cooked food from tomorrow, so there is time to pay
+    const first = settings?.payment_mode === "bank_transfer" ? 1 : 0;
+    return Array.from({ length: n + 1 - first }, (_, i) => viennaToday(i + first));
   }, [settings]);
 
   useEffect(() => {

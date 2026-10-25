@@ -14,7 +14,7 @@ export default function Home() {
     const sb = supabaseBrowser();
     Promise.all([
       sb.from("products").select("id,category,name,unit,price_cents,image_path,sort,allergens,options,description,description_de").eq("active", true).order("sort"),
-      sb.from("settings").select("accepting_orders,delivery_fee_cents,booking_days,same_day_cutoff").single(),
+      sb.from("settings").select("accepting_orders,delivery_fee_cents,booking_days,same_day_cutoff,payment_mode").single(),
     ]).then(([p, s]) => {
       if (p.error) setFailed(true);
       setProducts((p.data ?? []) as Product[]);

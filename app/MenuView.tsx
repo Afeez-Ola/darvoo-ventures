@@ -67,7 +67,7 @@ export default function MenuView({
           <div className="chips">
             {settings && (
               <span className="chip">
-                <Clock /> {t.orderUntil} {hhmm(settings.same_day_cutoff)}
+                <Clock /> {settings.payment_mode === "bank_transfer" ? t.orderDayAhead : `${t.orderUntil} ${hhmm(settings.same_day_cutoff)}`}
               </span>
             )}
             <span className="chip">{t.shippingAustria}</span>
