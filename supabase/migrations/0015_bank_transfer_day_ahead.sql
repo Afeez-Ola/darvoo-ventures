@@ -1,0 +1,1 @@
+-- see migration applied as 0015_bank_transfer_day_ahead (available_slots: no same-day while bank transfer only; public.pay_by(); get_order uses it)
