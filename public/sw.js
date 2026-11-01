@@ -2,7 +2,7 @@
 // Pages: network first, then the last copy seen, then the offline page.
 // Static files (JS, CSS, fonts, photos, icons): served from cache, refreshed in the background.
 // Never touches Supabase (orders, prices, payments): those always go to the network.
-const VERSION = "darvoo-v3";
+const VERSION = "darvoo-v4";
 const PAGES = `${VERSION}-pages`;
 const STATIC = `${VERSION}-static`;
 const OFFLINE_URL = "/offline"; // served from offline.html (the host drops the .html)

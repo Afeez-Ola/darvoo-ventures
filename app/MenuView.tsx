@@ -60,7 +60,7 @@ export default function MenuView({
       </header>
 
       <section className="hero">
-        <img src="/hero.jpg" alt="Victoria from Darvoo serving jollof rice to a customer at a street market in Vienna" />
+        <img src="/hero.jpg" alt={t.heroAlt} />
         <div className="hero-body">
           <span className="eyebrow">{t.heroEyebrow}</span>
           <h1 className="display">{t.heroTitle}</h1>
@@ -153,6 +153,12 @@ export default function MenuView({
       </div>
 
       {tab === "events" && (
+        <figure className="event-photo">
+          <img src="/photos/event-buffet.jpg" alt={t.eventPhotoAlt} loading="lazy" width={1000} height={703} />
+          <figcaption>{t.eventPhotoCaption}</figcaption>
+        </figure>
+      )}
+      {tab === "events" && (
         <section className="services" aria-labelledby="services-title">
           <h2 id="services-title" className="display">{t.servicesTitle}</h2>
           <p>{t.servicesIntro}</p>
@@ -168,6 +174,25 @@ export default function MenuView({
           </div>
         </section>
       )}
+
+      <section className="festivals" aria-labelledby="festivals-title">
+        <div className="festivals-head">
+          <h2 id="festivals-title" className="display">{t.festTitle}</h2>
+          <p>{t.festIntro}</p>
+        </div>
+        <div className="festivals-strip">
+          {([
+            ["/photos/fest-prosi.jpg", t.festCap1, t.festAlt1],
+            ["/photos/fest-serving.jpg", t.festCap2, t.festAlt2],
+            ["/photos/fest-team.jpg", t.festCap3, t.festAlt3],
+          ] as [string, string, string][]).map(([src, cap, alt]) => (
+            <figure key={src}>
+              <img src={src} alt={alt} loading="lazy" width={720} height={900} />
+              <figcaption>{cap}</figcaption>
+            </figure>
+          ))}
+        </div>
+      </section>
 
       {tab !== "events" && <div className="summary" style={{ marginTop: 28, justifyContent: "space-between" }}>
         <div style={{ display: "flex", flexDirection: "column", gap: 2 }}>
