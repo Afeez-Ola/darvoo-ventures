@@ -8,9 +8,9 @@ const SECURITY_HEADERS = {
   "Referrer-Policy": "strict-origin-when-cross-origin",
   "Permissions-Policy": "camera=(), microphone=(), geolocation=(), payment=(self)",
   "Content-Security-Policy":
-    "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; " +
+    "default-src 'self'; script-src 'self' 'unsafe-inline' https://static.cloudflareinsights.com; style-src 'self' 'unsafe-inline'; " +
     "img-src 'self' data: blob:; font-src 'self' data:; " +
-    "connect-src 'self' https://hgnfqpxkvnbieqrbynzf.supabase.co wss://hgnfqpxkvnbieqrbynzf.supabase.co; " +
+    "connect-src 'self' https://cloudflareinsights.com https://hgnfqpxkvnbieqrbynzf.supabase.co wss://hgnfqpxkvnbieqrbynzf.supabase.co; " +
     "frame-ancestors 'none'; base-uri 'self'; form-action 'self'; object-src 'none'",
 };
 

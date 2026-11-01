@@ -5,6 +5,9 @@ import { CartProvider } from "@/lib/cart";
 import RegisterSW from "@/components/RegisterSW";
 import "./globals.css";
 
+// Cloudflare Web Analytics (cookieless). Token from Cloudflare > Web analytics > darvooventures.com. Empty = off.
+const CF_BEACON_TOKEN = "";
+
 const display = Bricolage_Grotesque({ subsets: ["latin"], weight: ["600", "800"], variable: "--font-display" });
 const body = DM_Sans({ subsets: ["latin", "latin-ext"], weight: ["400", "500", "700"], variable: "--font-body" });
 
@@ -38,6 +41,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           <CartProvider>{children}</CartProvider>
           <RegisterSW />
         </I18nProvider>
+        {CF_BEACON_TOKEN && (
+          <script defer src="https://static.cloudflareinsights.com/beacon.min.js" data-cf-beacon={JSON.stringify({ token: CF_BEACON_TOKEN })} />
+        )}
       </body>
     </html>
   );

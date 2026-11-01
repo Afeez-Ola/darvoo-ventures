@@ -37,6 +37,9 @@ export default function Datenschutz() {
       <h2>Android-App</h2>
       <p>Die Android-App zeigt diese Website an. Es gelten dieselben Angaben. Die App fragt nur nach der Erlaubnis für Benachrichtigungen; sie greift nicht auf Standort, Kontakte, Kamera oder Fotos zu und enthält keine Werbung oder Analyse-Tools.</p>
 
+      <h2>Besucherstatistik</h2>
+      <p>Wir nutzen Cloudflare Web Analytics, um zu sehen, wie viele Menschen welche Seiten aufrufen. Dabei werden keine Cookies gesetzt, kein Fingerprinting betrieben und keine Profile über einzelne Personen gebildet; es werden nur zusammengefasste Werte wie Seitenaufrufe, Herkunftsland, Gerätetyp und Ladezeit erfasst. Rechtsgrundlage ist unser berechtigtes Interesse an einer funktionierenden und gut erreichbaren Website (Art. 6 Abs. 1 lit. f DSGVO).</p>
+
       <h2>Speicher im Browser</h2>
       <p>Dein Warenkorb, deine Sprache, deine letzten Bestellungen und, wenn du angemeldet bist, deine Anmeldung werden lokal in deinem Browser gespeichert. Wir setzen keine Tracking- oder Werbe-Cookies.</p>
 
