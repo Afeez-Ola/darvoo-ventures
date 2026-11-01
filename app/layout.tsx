@@ -6,7 +6,7 @@ import RegisterSW from "@/components/RegisterSW";
 import "./globals.css";
 
 // Cloudflare Web Analytics (cookieless). Token from Cloudflare > Web analytics > darvooventures.com. Empty = off.
-const CF_BEACON_TOKEN = "";
+const CF_BEACON_TOKEN = "c029b24ae9d14fb9973ef0aac35c194d";
 
 const display = Bricolage_Grotesque({ subsets: ["latin"], weight: ["600", "800"], variable: "--font-display" });
 const body = DM_Sans({ subsets: ["latin", "latin-ext"], weight: ["400", "500", "700"], variable: "--font-body" });
