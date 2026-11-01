@@ -293,7 +293,7 @@ export function SettingsEditor() {
         <label className="field">How customers pay
           <select value={payMode} onChange={(e) => setPayMode(e.target.value)} style={{ height: 44, borderRadius: 10, border: "1px solid var(--field)", padding: "0 10px" }}>
             <option value="bank_transfer">Bank transfer only (until Stripe is verified)</option>
-            <option value="online">Online payment (Stripe live)</option>
+            <option value="online" disabled>Online payment (available once Stripe is connected)</option>
           </select>
         </label>
         <div className="k-form-row">
